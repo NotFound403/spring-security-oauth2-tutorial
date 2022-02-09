@@ -18,3 +18,11 @@ spring:
             user-name-attribute: name
 server:
   port: 8082
+# 方便调试
+logging:
+  level:
+    org.springframework.web: trace
+    org.springframework.security: debug
+    org.springframework.security.oauth2: debug
+
+
