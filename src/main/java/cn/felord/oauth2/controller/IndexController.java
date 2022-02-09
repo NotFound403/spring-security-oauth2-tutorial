@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
+ * 默认登录成功跳转页
+ *
  * @author  felord.cn
  */
 @RestController
