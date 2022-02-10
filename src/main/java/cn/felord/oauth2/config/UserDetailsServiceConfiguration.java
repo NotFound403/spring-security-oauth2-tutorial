@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @EnableWebSecurity(debug = true)
 public class UserDetailsServiceConfiguration {
     /**
-     * 这里虚拟一个用户 felord 123456
+     * 这里虚拟一个用户 felord 123456  随机密码
      *
      * @return UserDetailsService
      */

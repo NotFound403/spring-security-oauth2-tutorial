@@ -10,7 +10,7 @@
     </parent>
     <groupId>cn.felord</groupId>
     <artifactId>spring-security-oauth2-tutorial</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>spring-security-oauth2-tutorial</name>
     <description>spring-security-oauth2-tutorial</description>
     <properties>
