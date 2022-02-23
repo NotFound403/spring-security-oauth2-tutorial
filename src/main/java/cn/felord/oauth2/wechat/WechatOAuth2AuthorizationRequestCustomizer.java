@@ -14,8 +14,9 @@ import java.util.function.Consumer;
  * customizer {@link OAuth2AuthorizationRequest}
  * <p>
  * client_id 变成 appid ，并追加锚点#wechat_redirect
- * @see   DefaultOAuth2AuthorizationRequestResolver#setAuthorizationRequestCustomizer(Consumer)
+ *
  * @author felord.cn
+ * @see DefaultOAuth2AuthorizationRequestResolver#setAuthorizationRequestCustomizer(Consumer)
  */
 public class WechatOAuth2AuthorizationRequestCustomizer {
     private static final String WECHAT_APP_ID = "appid";
@@ -29,24 +30,22 @@ public class WechatOAuth2AuthorizationRequestCustomizer {
 
 
     public void customize(OAuth2AuthorizationRequest.Builder builder) {
-           //todo  i  need  a  method  to  get registrationId   here      So that the following code logic can be executed
-            builder.parameters(WechatOAuth2AuthorizationRequestCustomizer::wechatParametersConsumer);
-            builder.authorizationRequestUri(WechatOAuth2AuthorizationRequestCustomizer::authorizationRequestUriFunction);
-
+        String registrationId = (String) builder.build()
+                .getAttributes()
+                .get(OAuth2ParameterNames.REGISTRATION_ID);
+        if (wechatRegistrationId.equals(registrationId)) {
+            builder.parameters(this::wechatParametersConsumer);
+            builder.authorizationRequestUri(this::authorizationRequestUriFunction);
+        }
     }
 
 
-    private static void matchProvider(Map<String, Object>attributes){
-        String registrationId = (String) attributes.get(OAuth2ParameterNames.REGISTRATION_ID);
-
-    }
-
-    private static void wechatParametersConsumer(Map<String, Object> parameters) {
+    private void wechatParametersConsumer(Map<String, Object> parameters) {
         //   client_id replace into appid here
         parameters.put(WECHAT_APP_ID, parameters.remove(OAuth2ParameterNames.CLIENT_ID));
     }
 
-    private static URI authorizationRequestUriFunction(UriBuilder builder) {
+    private URI authorizationRequestUriFunction(UriBuilder builder) {
         //  add  wechat fragment here
         return builder.fragment(WECHAT_FRAGMENT).build();
     }

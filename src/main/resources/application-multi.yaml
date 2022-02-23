@@ -17,6 +17,17 @@ spring:
             redirect-uri: '{baseUrl}/{action}/oauth2/code/{registrationId}'
             client-authentication-method: POST
             scope: user_info
+          wechat:
+            # 可以去试一下沙箱
+            # 公众号服务号 appid
+            client-id: wxdf9033184b238e7f
+            # 公众号服务号 secret
+            client-secret: bf1306baaa0d874457db15eb02d68df5
+            # oauth2 login 用 '{baseUrl}/login/oauth2/code/{registrationId}' 会自动解析
+            # oauth2 client 写你业务的链接即可
+            authorization-grant-type: authorization_code
+            redirect-uri:  '{baseUrl}/login/oauth2/code/{registrationId}'
+            scope: snsapi_userinfo
         provider:
           gitee:
             authorization-uri: https://gitee.com/oauth/authorize
@@ -28,5 +39,8 @@ spring:
             token-uri: https://gitee.com/oauth/token
             user-info-uri: https://gitee.com/api/v5/user
             user-name-attribute: name
-
+          wechat:
+            authorization-uri: https://open.weixin.qq.com/connect/oauth2/authorize
+            token-uri: https://api.weixin.qq.com/sns/oauth2/access_token
+            user-info-uri: https://api.weixin.qq.com/sns/userinfo
 
