@@ -1,10 +1,6 @@
 package cn.felord.oauth2.config;
 
-import cn.felord.oauth2.wechat.WechatMapOAuth2AccessTokenResponseConverter;
-import cn.felord.oauth2.wechat.WechatOAuth2AuthorizationCodeGrantRequestEntityConverter;
-import cn.felord.oauth2.wechat.WechatOAuth2AuthorizationRequestCustomizer;
-import cn.felord.oauth2.wechat.WechatOAuth2UserService;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import cn.felord.oauth2.wechat.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -16,8 +12,6 @@ import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResp
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.DelegatingOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
@@ -30,12 +24,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * @author felord.cn
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnBean(ClientRegistrationRepository.class)
 public class SecurityConfiguration {
     private static final String WECHAT_PROVIDER = "wechat";
 
@@ -65,21 +59,30 @@ public class SecurityConfiguration {
      */
     @Bean
     SecurityFilterChain customSecurityFilterChain(HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
-        OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DelegatingOAuth2UserService<>(Arrays.asList(new WechatOAuth2UserService(),
-                new DefaultOAuth2UserService()));
+    /*    OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DelegatingOAuth2UserService<>(Arrays.asList(new WechatOAuth2UserService(),
+                new DefaultOAuth2UserService()));*/
 
-        http.csrf().disable();
-        http.authorizeRequests((requests) -> requests.anyRequest().authenticated());
-        http.oauth2Login().authorizationEndpoint()
+
+        OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DelegatingOAuth2UserService<>(Collections.singletonMap("wechat",new WechatOAuth2UserService()));
+
+        OAuth2AuthorizationRequestResolver authorizationRequestResolver = oAuth2AuthorizationRequestResolver(clientRegistrationRepository);
+        OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient = accessTokenResponseClient();
+        http.csrf().disable()
+                .authorizeRequests((requests) -> requests.anyRequest().authenticated())
+                .oauth2Login().authorizationEndpoint()
                 // 授权端点配置
-                .authorizationRequestResolver(oAuth2AuthorizationRequestResolver(clientRegistrationRepository))
+                .authorizationRequestResolver(authorizationRequestResolver)
                 .and()
                  // 获取token端点配置  比如根据code 获取 token
-                .tokenEndpoint().accessTokenResponseClient(accessTokenResponseClient())
+                .tokenEndpoint().accessTokenResponseClient(accessTokenResponseClient)
                 .and()
                 // 获取用户信息端点配置  根据accessToken获取用户基本信息
                 .userInfoEndpoint().userService(oAuth2UserService);
-        http.oauth2Client();
+
+
+        http.oauth2Client()
+                .authorizationCodeGrant().authorizationRequestResolver(authorizationRequestResolver)
+                .accessTokenResponseClient(accessTokenResponseClient);
         return http.build();
     }
 
