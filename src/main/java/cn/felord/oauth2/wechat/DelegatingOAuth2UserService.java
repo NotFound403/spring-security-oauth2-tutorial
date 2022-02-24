@@ -26,14 +26,19 @@ public class DelegatingOAuth2UserService<R extends OAuth2UserRequest, U extends 
      */
     public DelegatingOAuth2UserService(List<OAuth2UserService<R, U>> userServices) {
         Assert.notEmpty(userServices, "userServices cannot be empty");
-        this.userServiceMap = Collections.emptyMap();
         this.userServices = Collections.unmodifiableList(new ArrayList<>(userServices));
+        this.userServiceMap = Collections.emptyMap();
     }
 
+    /**
+     * Constructs a {@code DelegatingOAuth2UserService} using the provided parameters.
+     *
+     * @param userServiceMap a {@code Map} that  k -> registrationId ，v-> {@code  OAuth2UserService}
+     */
     public DelegatingOAuth2UserService(Map<String, OAuth2UserService<R, U>> userServiceMap) {
         Assert.notEmpty(userServiceMap, "userServiceMap cannot be empty");
-        this.userServices = Collections.emptyList();
         this.userServiceMap = Collections.unmodifiableMap(userServiceMap);
+        this.userServices = Collections.emptyList();
     }
 
     @Override
