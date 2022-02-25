@@ -40,7 +40,7 @@ public class DelegatingOAuth2UserService<R extends OAuth2UserRequest, U extends 
         this.userServiceMap = Collections.unmodifiableMap(userServiceMap);
         this.userServices = Collections.emptyList();
     }
-
+    @SuppressWarnings("unchecked")
     @Override
     public U loadUser(R userRequest) throws OAuth2AuthenticationException {
         Assert.notNull(userRequest, "userRequest cannot be null");

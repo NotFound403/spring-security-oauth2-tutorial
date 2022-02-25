@@ -22,15 +22,17 @@ public class FooController {
      * 获取当前的OAuth2 Client对象实例{@link OAuth2AuthorizedClient}
      * 和当前认证对象实例{@link Authentication}
      *
-     * @param giteeOauth2client the gitee Oauth2 client
+     * @param oAuth2AuthorizedClient the gitee Oauth2 client
      * @return the map
      */
     @GetMapping("/foo/hello")
     public Map<String, Object> foo(@RegisteredOAuth2AuthorizedClient
-                                           OAuth2AuthorizedClient giteeOauth2client) {
+                                           OAuth2AuthorizedClient oAuth2AuthorizedClient) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Map<String, Object> map = new HashMap<>(2);
-        map.put("giteeOauth2client", giteeOauth2client);
+
+        // OAuth2AuthorizedClient 为敏感信息不应该返回前端
+        map.put("oauth2client", oAuth2AuthorizedClient);
         map.put("authentication", authentication);
         return map;
     }
@@ -42,10 +44,12 @@ public class FooController {
      */
     @GetMapping("/")
     public Map<String, Object> index(@RegisteredOAuth2AuthorizedClient
-                                                 OAuth2AuthorizedClient giteeOauth2client) {
+                                                 OAuth2AuthorizedClient oAuth2AuthorizedClient) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Map<String, Object> map = new HashMap<>(2);
-        map.put("wechatOauth2client", giteeOauth2client);
+
+        // OAuth2AuthorizedClient 为敏感信息不应该返回前端
+        map.put("oauth2client", oAuth2AuthorizedClient);
         map.put("authentication", authentication);
         return map;
     }

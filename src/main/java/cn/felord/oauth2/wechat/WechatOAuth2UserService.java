@@ -42,7 +42,7 @@ import java.util.Collections;
  * @since 2021 /8/12 17:45
  */
 public class WechatOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
-    private static final String WECHAT_PROVIDER = "wechat";
+
     private static final String MISSING_USER_INFO_URI_ERROR_CODE = "missing_user_info_uri";
     private static final String MISSING_OPENID_ERROR_CODE = "missing_openid_attribute";
     private static final String INVALID_USER_INFO_RESPONSE_ERROR_CODE = "invalid_user_info_response";
@@ -66,10 +66,6 @@ public class WechatOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     public WechatOAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         ClientRegistration clientRegistration = userRequest.getClientRegistration();
         String registrationId = clientRegistration.getRegistrationId();
-        // DelegatingOAuth2UserService 设计的并不好用
-        if (!WECHAT_PROVIDER.equals(registrationId)) {
-            return null;
-        }
         Assert.notNull(userRequest, "userRequest cannot be null");
         if (!StringUtils
                 .hasText(clientRegistration.getProviderDetails().getUserInfoEndpoint().getUri())) {

@@ -21,10 +21,9 @@ public class WechatMapOAuth2AccessTokenResponseConverter implements Converter<Ma
 
     @Override
     public OAuth2AccessTokenResponse convert(Map<String, Object> tokenResponseParameters) {
-        HashMap<String, Object> response = new HashMap<>(tokenResponseParameters);
         // 避免 token_type 空校验异常
-        response.put(OAuth2ParameterNames.TOKEN_TYPE, OAuth2AccessToken.TokenType.BEARER.getValue());
-        return this.delegate.convert(response);
+        tokenResponseParameters.put(OAuth2ParameterNames.TOKEN_TYPE, OAuth2AccessToken.TokenType.BEARER.getValue());
+        return this.delegate.convert(tokenResponseParameters);
     }
 
 }
