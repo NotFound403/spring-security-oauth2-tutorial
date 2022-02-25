@@ -40,7 +40,7 @@ public class WechatOAuth2AuthorizationRequestCustomizer {
      *
      * @param builder the builder
      */
-     public void customize(OAuth2AuthorizationRequest.Builder builder) {
+    public void customize(OAuth2AuthorizationRequest.Builder builder) {
         String registrationId = (String) builder.build()
                 .getAttributes()
                 .get(OAuth2ParameterNames.REGISTRATION_ID);
@@ -53,16 +53,15 @@ public class WechatOAuth2AuthorizationRequestCustomizer {
 
     private void wechatParametersConsumer(Map<String, Object> parameters) {
         //   client_id replace into appid here
-        LinkedHashMap<String, Object> linkedParameters =  new LinkedHashMap<>();
-        //  k v 有固定顺序
-        parameters.forEach((k,v)->{
-          if (OAuth2ParameterNames.CLIENT_ID.equals(k)){
-              linkedParameters.put(WECHAT_APP_ID,v);
-          }else {
-              linkedParameters.put(k,v);
-          }
+        LinkedHashMap<String, Object> linkedParameters = new LinkedHashMap<>();
+        //  k v  must be ordered
+        parameters.forEach((k, v) -> {
+            if (OAuth2ParameterNames.CLIENT_ID.equals(k)) {
+                linkedParameters.put(WECHAT_APP_ID, v);
+            } else {
+                linkedParameters.put(k, v);
+            }
         });
-
         parameters.clear();
         parameters.putAll(linkedParameters);
     }

@@ -7,7 +7,6 @@ import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2Aut
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +41,12 @@ public class FooController {
      * @return the map
      */
     @GetMapping("/")
-    public Map<String, String> index() {
-        return Collections.singletonMap("msg", "oauth2Login success!");
+    public Map<String, Object> index(@RegisteredOAuth2AuthorizedClient
+                                                 OAuth2AuthorizedClient giteeOauth2client) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> map = new HashMap<>(2);
+        map.put("wechatOauth2client", giteeOauth2client);
+        map.put("authentication", authentication);
+        return map;
     }
 }

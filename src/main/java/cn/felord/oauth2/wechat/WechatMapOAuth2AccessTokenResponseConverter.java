@@ -3,12 +3,11 @@ package cn.felord.oauth2.wechat;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.endpoint.DefaultMapOAuth2AccessTokenResponseConverter;
-import org.springframework.security.oauth2.core.endpoint.MapOAuth2AccessTokenResponseConverter;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
-import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 兼容微信token接口返回转换的工具，扩展了{@link DefaultMapOAuth2AccessTokenResponseConverter}

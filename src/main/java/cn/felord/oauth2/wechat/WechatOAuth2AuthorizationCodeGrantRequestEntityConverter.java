@@ -18,7 +18,6 @@ package cn.felord.oauth2.wechat;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
@@ -27,7 +26,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationExchange;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
-import org.springframework.security.oauth2.core.endpoint.PkceParameterNames;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -41,6 +39,7 @@ import java.util.Collections;
 /**
  * 兼容微信请求参数的请求参数封装工具类,扩展了{@link OAuth2AuthorizationCodeGrantRequestEntityConverter}
  *
+ * @author  felord.cn
  * @see OAuth2AuthorizationCodeGrantRequestEntityConverter
  * @see Converter
  * @see OAuth2AuthorizationCodeGrantRequest
@@ -51,7 +50,7 @@ public class WechatOAuth2AuthorizationCodeGrantRequestEntityConverter
         implements Converter<OAuth2AuthorizationCodeGrantRequest, RequestEntity<?>> {
     private static final HttpHeaders DEFAULT_TOKEN_REQUEST_HEADERS = getDefaultTokenRequestHeaders();
     private static final String WECHAT_ID = "wechat";
-    private  Converter<OAuth2AuthorizationCodeGrantRequest,RequestEntity<?>> defaultConverter = new  OAuth2AuthorizationCodeGrantRequestEntityConverter();
+    private final Converter<OAuth2AuthorizationCodeGrantRequest,RequestEntity<?>> defaultConverter = new  OAuth2AuthorizationCodeGrantRequestEntityConverter();
     /**
      * Returns the {@link RequestEntity} used for the Access Token Request.
      *

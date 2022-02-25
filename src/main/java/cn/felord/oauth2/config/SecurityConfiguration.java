@@ -67,8 +67,8 @@ public class SecurityConfiguration {
 
         OAuth2AuthorizationRequestResolver authorizationRequestResolver = oAuth2AuthorizationRequestResolver(clientRegistrationRepository);
         OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient = accessTokenResponseClient();
-        http.csrf().disable()
-                .authorizeRequests((requests) -> requests.anyRequest().authenticated())
+
+        http.authorizeRequests((requests) -> requests.anyRequest().authenticated())
                 .oauth2Login().authorizationEndpoint()
                 // 授权端点配置
                 .authorizationRequestResolver(authorizationRequestResolver)
@@ -78,8 +78,6 @@ public class SecurityConfiguration {
                 .and()
                 // 获取用户信息端点配置  根据accessToken获取用户基本信息
                 .userInfoEndpoint().userService(oAuth2UserService);
-
-
         http.oauth2Client()
                 .authorizationCodeGrant().authorizationRequestResolver(authorizationRequestResolver)
                 .accessTokenResponseClient(accessTokenResponseClient);

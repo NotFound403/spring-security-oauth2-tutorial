@@ -28,19 +28,19 @@ public class WechatOAuth2User implements OAuth2User {
 
     @Override
     public Map<String, Object> getAttributes() {
-
+       //todo 这里放一些有用的额外参数
         return Collections.emptyMap();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
+        //todo 微信用户你想赋权的可以在这里或者set方法中实现。
         return this.authorities;
     }
 
     @Override
     public String getName() {
-
+        // todo 根据业务需要调整
         return openid;
     }
 }
