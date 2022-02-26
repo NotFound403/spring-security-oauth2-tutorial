@@ -1,5 +1,6 @@
 package cn.felord.oauth2.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -15,6 +16,7 @@ import java.util.Map;
  *
  * @author felord.cn
  */
+@Slf4j
 @RestController
 public class FooController {
 
@@ -32,7 +34,7 @@ public class FooController {
         Map<String, Object> map = new HashMap<>(2);
 
         // OAuth2AuthorizedClient 为敏感信息不应该返回前端
-        map.put("oauth2client", oAuth2AuthorizedClient);
+        log.debug("OAuth2AuthorizedClient：{} ",oAuth2AuthorizedClient);
         map.put("authentication", authentication);
         return map;
     }
@@ -49,7 +51,7 @@ public class FooController {
         Map<String, Object> map = new HashMap<>(2);
 
         // OAuth2AuthorizedClient 为敏感信息不应该返回前端
-        map.put("oauth2client", oAuth2AuthorizedClient);
+        log.debug("OAuth2AuthorizedClient：{} ",oAuth2AuthorizedClient);
         map.put("authentication", authentication);
         return map;
     }

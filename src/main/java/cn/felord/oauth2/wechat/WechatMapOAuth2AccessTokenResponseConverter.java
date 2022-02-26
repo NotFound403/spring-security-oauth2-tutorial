@@ -6,7 +6,6 @@ import org.springframework.security.oauth2.core.endpoint.DefaultMapOAuth2AccessT
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
