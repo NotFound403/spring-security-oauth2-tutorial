@@ -10,13 +10,6 @@ spring:
             redirect-uri: '{baseUrl}/{action}/oauth2/code/{registrationId}'
             client-authentication-method: POST
             scope: user_info
-          gitee2:
-            client-id: d67c84dd1f4af710550ec3835cdcc1db79c8728069b91fcb10ba0f59e0d83ce3
-            client-secret: 722818c3564f259bfbf7a424d04d8d962cafc7e5e32443b7182c2c1f70616f8e
-            authorization-grant-type: authorization_code
-            redirect-uri: '{baseUrl}/{action}/oauth2/code/{registrationId}'
-            client-authentication-method: POST
-            scope: user_info
           wechat:
             # 可以去试一下沙箱
             # 公众号服务号 appid
@@ -30,11 +23,6 @@ spring:
             scope: snsapi_userinfo
         provider:
           gitee:
-            authorization-uri: https://gitee.com/oauth/authorize
-            token-uri: https://gitee.com/oauth/token
-            user-info-uri: https://gitee.com/api/v5/user
-            user-name-attribute: name
-          gitee2:
             authorization-uri: https://gitee.com/oauth/authorize
             token-uri: https://gitee.com/oauth/token
             user-info-uri: https://gitee.com/api/v5/user
