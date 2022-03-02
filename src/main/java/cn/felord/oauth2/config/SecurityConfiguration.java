@@ -1,6 +1,10 @@
 package cn.felord.oauth2.config;
 
-import cn.felord.oauth2.wechat.*;
+import cn.felord.oauth2.wechat.DelegatingOAuth2UserService;
+import cn.felord.oauth2.wechat.WechatMapOAuth2AccessTokenResponseConverter;
+import cn.felord.oauth2.wechat.WechatOAuth2AuthorizationCodeGrantRequestEntityConverter;
+import cn.felord.oauth2.wechat.WechatOAuth2AuthorizationRequestCustomizer;
+import cn.felord.oauth2.wechat.WechatOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -25,7 +29,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * @author felord.cn
@@ -69,7 +72,9 @@ public class SecurityConfiguration {
         OAuth2AuthorizationRequestResolver authorizationRequestResolver = oAuth2AuthorizationRequestResolver(clientRegistrationRepository);
         OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient = accessTokenResponseClient();
 
-        http.authorizeRequests((requests) -> requests.anyRequest().authenticated())
+        http.authorizeRequests((requests) -> requests.antMatchers("/oauth2/jwks")
+                        .permitAll()
+                        .anyRequest().authenticated())
                 .oauth2Login().authorizationEndpoint()
                 // 授权端点配置
                 .authorizationRequestResolver(authorizationRequestResolver)
