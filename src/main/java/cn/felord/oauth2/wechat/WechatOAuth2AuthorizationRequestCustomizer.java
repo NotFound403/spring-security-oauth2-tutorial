@@ -41,13 +41,13 @@ public class WechatOAuth2AuthorizationRequestCustomizer {
      * @param builder the builder
      */
     public void customize(OAuth2AuthorizationRequest.Builder builder) {
-        String registrationId = (String) builder.build()
-                .getAttributes()
-                .get(OAuth2ParameterNames.REGISTRATION_ID);
-        if (wechatRegistrationId.equals(registrationId)) {
-            builder.parameters(this::wechatParametersConsumer);
-            builder.authorizationRequestUri(this::authorizationRequestUriFunction);
-        }
+        builder.attributes(attributes -> {
+            String registrationId = (String) attributes.get(OAuth2ParameterNames.REGISTRATION_ID);
+            if (wechatRegistrationId.equals(registrationId)) {
+                builder.parameters(this::wechatParametersConsumer);
+                builder.authorizationRequestUri(this::authorizationRequestUriFunction);
+            }
+        });
     }
 
 
