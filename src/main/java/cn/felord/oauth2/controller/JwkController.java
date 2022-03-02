@@ -18,8 +18,10 @@ import java.security.cert.CertificateException;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * @author felord.cn
+ */
 @RestController
-@RequestMapping("/oauth2")
 public class JwkController {
     private static RSAKey rsaKey;
 
@@ -40,11 +42,17 @@ public class JwkController {
 
     }
 
-
+    /**
+     *  jwkSetUri
+     *
+     * @return pub jwk
+     */
     @SneakyThrows
-    @GetMapping("/jwks")
+    @GetMapping(value = "/oauth2/jwks")
     public Map<String, Object> jwks() {
+//        com.nimbusds.jose.jwk.RSAKey rsaKey = ... ;
         JWKSet jwkSet = new JWKSet(Collections.singletonList(rsaKey));
+        // 这里只会输出公钥JWK
         return JSONObjectUtils.parse(jwkSet.toString());
     }
 }
