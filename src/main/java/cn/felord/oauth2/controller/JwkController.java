@@ -7,6 +7,8 @@ import com.nimbusds.jose.util.JSONObjectUtils;
 import lombok.SneakyThrows;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -50,7 +52,11 @@ public class JwkController {
     @PreAuthorize("hasAuthority('SCOPE_user_info')")
     @SneakyThrows
     @GetMapping(value = "/oauth2/jwks")
-    public Map<String, Object> jwks() {
+    public Map<String, Object> jwks(@RegisteredOAuth2AuthorizedClient("gitee-client") OAuth2AuthorizedClient oAuth2AuthorizedClient) {
+        if (oAuth2AuthorizedClient==null){
+          return Collections.singletonMap("403","fail to oauth2 authorization");
+        }
+
 //        com.nimbusds.jose.jwk.RSAKey rsaKey = ... ;
         JWKSet jwkSet = new JWKSet(Collections.singletonList(rsaKey));
         // 这里只会输出公钥JWK
