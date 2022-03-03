@@ -75,7 +75,7 @@ public class SecurityConfiguration {
         http.authorizeRequests((requests) -> requests.antMatchers("/oauth2/jwks")
                         .permitAll()
                         .anyRequest().authenticated())
-                .oauth2Login().authorizationEndpoint()
+         /*       .oauth2Login().authorizationEndpoint()
                 // 授权端点配置
                 .authorizationRequestResolver(authorizationRequestResolver)
                 .and()
@@ -83,7 +83,7 @@ public class SecurityConfiguration {
                 .tokenEndpoint().accessTokenResponseClient(accessTokenResponseClient)
                 .and()
                 // 获取用户信息端点配置  根据accessToken获取用户基本信息
-                .userInfoEndpoint().userService(oAuth2UserService);
+                .userInfoEndpoint().userService(oAuth2UserService)*/;
         http.oauth2Client()
                 .authorizationCodeGrant().authorizationRequestResolver(authorizationRequestResolver)
                 .accessTokenResponseClient(accessTokenResponseClient);

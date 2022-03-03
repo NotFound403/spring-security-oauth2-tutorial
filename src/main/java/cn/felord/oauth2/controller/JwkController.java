@@ -6,8 +6,8 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.util.JSONObjectUtils;
 import lombok.SneakyThrows;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -47,6 +47,7 @@ public class JwkController {
      *
      * @return pub jwk
      */
+    @PreAuthorize("hasAuthority('SCOPE_user_info')")
     @SneakyThrows
     @GetMapping(value = "/oauth2/jwks")
     public Map<String, Object> jwks() {
