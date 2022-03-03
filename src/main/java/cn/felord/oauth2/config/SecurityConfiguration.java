@@ -63,11 +63,8 @@ public class SecurityConfiguration {
      */
     @Bean
     SecurityFilterChain customSecurityFilterChain(HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
-    /*    OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DelegatingOAuth2UserService<>(Arrays.asList(new WechatOAuth2UserService(),
-                new DefaultOAuth2UserService()));*/
 
-
-        OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DelegatingOAuth2UserService<>(Collections.singletonMap("wechat",new WechatOAuth2UserService()));
+        OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DelegatingOAuth2UserService<>(Collections.singletonMap("wechat", new WechatOAuth2UserService()));
 
         OAuth2AuthorizationRequestResolver authorizationRequestResolver = oAuth2AuthorizationRequestResolver(clientRegistrationRepository);
         OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient = accessTokenResponseClient();
@@ -75,16 +72,7 @@ public class SecurityConfiguration {
         http.authorizeRequests((requests) -> requests.antMatchers("/oauth2/jwks")
                         .permitAll()
                         .anyRequest().authenticated())
-         /*       .oauth2Login().authorizationEndpoint()
-                // 授权端点配置
-                .authorizationRequestResolver(authorizationRequestResolver)
-                .and()
-                 // 获取token端点配置  比如根据code 获取 token
-                .tokenEndpoint().accessTokenResponseClient(accessTokenResponseClient)
-                .and()
-                // 获取用户信息端点配置  根据accessToken获取用户基本信息
-                .userInfoEndpoint().userService(oAuth2UserService)*/;
-        http.oauth2Client()
+                .oauth2Client()
                 .authorizationCodeGrant().authorizationRequestResolver(authorizationRequestResolver)
                 .accessTokenResponseClient(accessTokenResponseClient);
         return http.build();
