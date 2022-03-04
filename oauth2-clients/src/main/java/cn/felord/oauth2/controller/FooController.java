@@ -40,6 +40,21 @@ public class FooController {
     }
 
     /**
+     * 测试Spring Authorization Server
+     *
+     * @param client the client
+     * @return the map
+     */
+    @GetMapping("/bar")
+    public Map<String,Object> bar(@RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient client){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> map = new HashMap<>();
+        map.put("authentication",authentication);
+        // OAuth2AuthorizedClient 为敏感信息不应该返回前端
+        map.put("oAuth2AuthorizedClient",client);
+        return map;
+    }
+    /**
      * 默认登录成功跳转页为 /  防止404状态
      *
      * @return the map

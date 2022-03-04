@@ -21,8 +21,10 @@ import org.springframework.security.config.annotation.web.configurers.oauth2.ser
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.server.authorization.*;
+import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
+import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
@@ -74,22 +76,6 @@ public class AuthorizationServerConfiguration {
                 .apply(authorizationServerConfigurer);
     }
 
-
-    /**
-     * 对jwt token 进行增强，如果有需要的话
-     *
-     * @return oauth 2 token customizer
-     */
-//    @Bean
-    OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
-        return jwtEncodingContext -> {
-            JwtClaimsSet.Builder claims = jwtEncodingContext.getClaims();
-            claims.claim("xxxx", "xxxxx");
-            JwtEncodingContext.with(jwtEncodingContext.getHeaders(), claims);
-        };
-    }
-
-
     /**
      * 注册一个客户端应用
      *
@@ -99,10 +85,26 @@ public class AuthorizationServerConfiguration {
     @SneakyThrows
     @Bean
     public RegisteredClientRepository registeredClientRepository(JdbcTemplate jdbcTemplate) {
+        //         每次都会初始化  生产的话 只初始化JdbcRegisteredClientRepository
+        JdbcRegisteredClientRepository registeredClientRepository = new JdbcRegisteredClientRepository(jdbcTemplate);
         // TODO 生产上 注册客户端需要使用接口 不应该采用下面的方式
-        RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
+        // only@test begin
+        final String id = "10000";
+        RegisteredClient registeredClient = registeredClientRepository.findById(id);
+        if (registeredClient == null) {
+            registeredClient = this.createRegisteredClient(id);
+            registeredClientRepository.save(registeredClient);
+        }
+        // only@test end
+        return registeredClientRepository;
+    }
+
+    private RegisteredClient createRegisteredClient(final String id) {
+        return RegisteredClient.withId(UUID.randomUUID().toString())
 //               客户端ID和密码
                 .clientId("felord-client")
+//               此处为了避免频繁启动重复写入仓库
+                .id(id)
                 .clientSecret("secret")
 //                名称 可不定义
                 .clientName("felord")
@@ -113,9 +115,9 @@ public class AuthorizationServerConfiguration {
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
 //                回调地址名单，不在此列将被拒绝 而且只能使用IP或者域名  不能使用 localhost
-                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/felord-client-oidc")
-                .redirectUri("http://127.0.0.1:8080/authorized")
-                .redirectUri("http://127.0.0.1:8080/foo/bar")
+                .redirectUri("http://127.0.0.1:8082/login/oauth2/code/felord-client-oidc")
+                .redirectUri("http://127.0.0.1:8082/authorized")
+                .redirectUri("http://127.0.0.1:8082/foo/bar")
                 .redirectUri("https://baidu.com")
 //                OIDC支持
                 .scope(OidcScopes.OPENID)
@@ -127,13 +129,8 @@ public class AuthorizationServerConfiguration {
 //                配置客户端相关的配置项，包括验证密钥或者 是否需要授权页面
                 .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
                 .build();
-
-//         每次都会初始化  生产的话 只初始化JdbcRegisteredClientRepository
-        JdbcRegisteredClientRepository registeredClientRepository = new JdbcRegisteredClientRepository(jdbcTemplate);
-//TODO        return registeredClientRepository;
-        registeredClientRepository.save(registeredClient);
-        return registeredClientRepository;
     }
+
 
     /**
      * 授权服务

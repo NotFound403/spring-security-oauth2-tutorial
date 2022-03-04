@@ -59,9 +59,6 @@ public class SecurityConfiguration {
      */
     @Bean
     SecurityFilterChain customSecurityFilterChain(HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
-    /*    OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DelegatingOAuth2UserService<>(Arrays.asList(new WechatOAuth2UserService(),
-                new DefaultOAuth2UserService()));*/
-
 
         OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DelegatingOAuth2UserService<>(Collections.singletonMap("wechat",new WechatOAuth2UserService()));
 
