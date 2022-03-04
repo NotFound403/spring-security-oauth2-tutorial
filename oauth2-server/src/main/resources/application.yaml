@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: authorization-server
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+        trace: true
+server:
+  port: 9000
+# 方便调试
+logging:
+  level:
+    org.springframework.web: trace
+    org.springframework.security: debug
+    org.springframework.security.oauth2: debug
