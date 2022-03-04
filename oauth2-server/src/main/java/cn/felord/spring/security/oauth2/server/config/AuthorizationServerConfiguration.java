@@ -168,9 +168,9 @@ public class AuthorizationServerConfiguration {
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
         //TODO 这里优化到配置
-        String path = "felordcn.jks";
-        String alias = "felordcn";
-        String pass = "123456";
+        String path = "jose.jks";
+        String alias = "jose";
+        String pass = "felord.cn";
 
         ClassPathResource resource = new ClassPathResource(path);
         KeyStore jks = KeyStore.getInstance("jks");
