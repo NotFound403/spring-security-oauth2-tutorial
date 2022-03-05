@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
@@ -60,17 +61,19 @@ public class SecurityConfiguration {
     @Bean
     SecurityFilterChain customSecurityFilterChain(HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
 
-        OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DelegatingOAuth2UserService<>(Collections.singletonMap("wechat",new WechatOAuth2UserService()));
+        OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DelegatingOAuth2UserService<>(Collections.singletonMap("wechat", new WechatOAuth2UserService()));
 
         OAuth2AuthorizationRequestResolver authorizationRequestResolver = oAuth2AuthorizationRequestResolver(clientRegistrationRepository);
         OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient = accessTokenResponseClient();
 
-        http.authorizeRequests((requests) -> requests.anyRequest().authenticated())
+        http.authorizeRequests((requests) -> requests
+                        .antMatchers("/foo/bar").anonymous()
+                        .anyRequest().authenticated())
                 .oauth2Login().authorizationEndpoint()
                 // 授权端点配置
                 .authorizationRequestResolver(authorizationRequestResolver)
                 .and()
-                 // 获取token端点配置  比如根据code 获取 token
+                // 获取token端点配置  比如根据code 获取 token
                 .tokenEndpoint().accessTokenResponseClient(accessTokenResponseClient)
                 .and()
                 // 获取用户信息端点配置  根据accessToken获取用户基本信息
@@ -118,6 +121,11 @@ public class SecurityConfiguration {
         restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
         tokenResponseClient.setRestOperations(restTemplate);
         return tokenResponseClient;
+    }
+
+    @Bean
+    WebSecurityCustomizer ignore() {
+        return web -> web.ignoring().antMatchers("/favicon.ico");
     }
 }
 

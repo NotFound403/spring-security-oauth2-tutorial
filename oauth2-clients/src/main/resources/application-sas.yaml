@@ -4,7 +4,7 @@ spring:
       client:
         registration:
           felord:
-            client-id: felord-client
+            client-id: felord
             client-secret: secret
 #            isValidRedirectUri
 #            http://127.0.0.1:8082/oauth2/authorization/felord

@@ -18,6 +18,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
@@ -102,10 +104,11 @@ public class AuthorizationServerConfiguration {
     private RegisteredClient createRegisteredClient(final String id) {
         return RegisteredClient.withId(UUID.randomUUID().toString())
 //               客户端ID和密码
-                .clientId("felord-client")
+                .clientId("felord")
 //               此处为了避免频繁启动重复写入仓库
                 .id(id)
-                .clientSecret("secret")
+//                client_secret_basic    客户端需要存明文   服务器存密文
+                .clientSecret(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode("secret"))
 //                名称 可不定义
                 .clientName("felord")
 //                授权方法

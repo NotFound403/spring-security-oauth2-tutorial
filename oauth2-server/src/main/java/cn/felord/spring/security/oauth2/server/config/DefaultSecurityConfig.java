@@ -54,7 +54,7 @@ public class DefaultSecurityConfig {
     UserDetailsService users() {
         UserDetails user = User.builder()
                 .username("felord")
-                .password("password")
+                .password("123456")
                 .passwordEncoder(PasswordEncoderFactories.createDelegatingPasswordEncoder()::encode)
                 .roles("USER")
                 .build();
