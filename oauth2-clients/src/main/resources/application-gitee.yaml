@@ -16,5 +16,3 @@ spring:
             token-uri: https://gitee.com/oauth/token
             user-info-uri: https://gitee.com/api/v5/user
             user-name-attribute: name
-
-

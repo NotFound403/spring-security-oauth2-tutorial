@@ -23,6 +23,8 @@ import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
@@ -37,6 +39,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.security.KeyStore;
+import java.security.PublicKey;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPublicKey;
 import java.util.UUID;
 
 /**
@@ -120,12 +127,14 @@ public class AuthorizationServerConfiguration {
 //                回调地址名单，不在此列将被拒绝 而且只能使用IP或者域名  不能使用 localhost
                 .redirectUri("http://127.0.0.1:8082/login/oauth2/code/felord-client-oidc")
                 .redirectUri("http://127.0.0.1:8082/authorized")
+                .redirectUri("http://127.0.0.1:8082/login/oauth2/code/felord")
                 .redirectUri("http://127.0.0.1:8082/foo/bar")
                 .redirectUri("https://baidu.com")
 //                OIDC支持
                 .scope(OidcScopes.OPENID)
 //                其它Scope
                 .scope("message.read")
+                .scope("userinfo")
                 .scope("message.write")
 //                JWT的配置项 包括TTL  是否复用refreshToken等等
                 .tokenSettings(TokenSettings.builder().build())

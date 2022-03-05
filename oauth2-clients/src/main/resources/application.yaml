@@ -8,7 +8,4 @@ logging:
     org.springframework.security.oauth2: debug
 spring:
   profiles:
-#    单个或者多个授权
-#    active: single
-    active: multi
-
+    active: all

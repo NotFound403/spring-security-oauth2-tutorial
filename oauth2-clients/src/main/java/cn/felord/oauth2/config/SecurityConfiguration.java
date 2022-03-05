@@ -67,7 +67,8 @@ public class SecurityConfiguration {
         OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient = accessTokenResponseClient();
 
         http.authorizeRequests((requests) -> requests
-                        .antMatchers("/foo/bar").anonymous()
+//                        .antMatchers("/foo/bar").anonymous()
+                        .antMatchers("/foo/bar").hasAnyAuthority("ROLE_ANONYMOUS","SCOPE_userinfo")
                         .anyRequest().authenticated())
                 .oauth2Login().authorizationEndpoint()
                 // 授权端点配置

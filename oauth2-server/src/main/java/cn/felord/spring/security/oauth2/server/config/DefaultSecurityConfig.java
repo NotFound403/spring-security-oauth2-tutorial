@@ -15,7 +15,9 @@
  */
 package cn.felord.spring.security.oauth2.server.config;
 
+import lombok.SneakyThrows;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -23,8 +25,14 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+import java.security.interfaces.RSAPublicKey;
 
 
 /**
@@ -37,9 +45,12 @@ public class DefaultSecurityConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests(authorizeRequests ->
-                        authorizeRequests.anyRequest().authenticated()
+                        authorizeRequests.antMatchers("/oauth2/user").hasAnyAuthority("SCOPE_userinfo")
+                                .anyRequest().authenticated()
                 )
-                .formLogin();
+                .formLogin()
+                .and()
+                .oauth2ResourceServer().jwt();
         return http.build();
     }
     // @formatter:on
@@ -62,7 +73,16 @@ public class DefaultSecurityConfig {
     }
     // @formatter:on
 
-
+    @SneakyThrows
+    @Bean
+    JwtDecoder jwtDecoder() {
+        CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+        // 读取cer公钥证书来配置解码器
+        ClassPathResource resource = new ClassPathResource("pub.cer");
+        Certificate certificate = certificateFactory.generateCertificate(resource.getInputStream());
+        RSAPublicKey publicKey = (RSAPublicKey) certificate.getPublicKey();
+        return NimbusJwtDecoder.withPublicKey(publicKey).build();
+    }
     /**
      * Web security customizer web security customizer.
      *
