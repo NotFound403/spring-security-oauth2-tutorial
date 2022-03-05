@@ -1,4 +1,3 @@
-
 server:
   port: 8082
 # 方便调试
@@ -7,9 +6,10 @@ logging:
     org.springframework.web: trace
     org.springframework.security: trace
     org.springframework.security.oauth2: debug
-spring:
-  profiles:
-#    单个或者多个授权
-#    active: single
-    active: multi
-
+# 自定义jwt 配置
+jwt:
+  cert-info:
+    public-key-location: publickey.cer
+  claims:
+    issuer: https://felord.cn
+    expires-at: 604800
