@@ -17,8 +17,10 @@ import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 
+import java.io.InputStream;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
 import java.util.Collection;
 
@@ -74,13 +76,18 @@ public class JwtDecoderConfiguration {
      */
     @SneakyThrows
     @Bean
-    public JwtDecoder jwtDecoder(@Qualifier("delegatingTokenValidator") DelegatingOAuth2TokenValidator<Jwt> validator) {
+    public JwtDecoder jwtDecoder(@Qualifier("delegatingTokenValidator")
+                                             DelegatingOAuth2TokenValidator<Jwt> validator) {
         CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
         // 读取cer公钥证书来配置解码器
-        ClassPathResource resource = new ClassPathResource(this.jwtProperties.getCertInfo().getPublicKeyLocation());
-        X509Certificate certificate = (X509Certificate) certificateFactory.generateCertificate(resource.getInputStream());
+        String publicKeyLocation = this.jwtProperties.getCertInfo().getPublicKeyLocation();
+        ClassPathResource resource = new ClassPathResource(publicKeyLocation);
+        InputStream inputStream = resource.getInputStream();
+        X509Certificate certificate = (X509Certificate) certificateFactory.generateCertificate(inputStream);
         RSAKey rsaKey = RSAKey.parse(certificate);
-        NimbusJwtDecoder nimbusJwtDecoder = NimbusJwtDecoder.withPublicKey(rsaKey.toRSAPublicKey()).build();
+        RSAPublicKey key = rsaKey.toRSAPublicKey();
+        NimbusJwtDecoder nimbusJwtDecoder = NimbusJwtDecoder.withPublicKey(key).build();
+        // 注入自定义JWT校验逻辑
         nimbusJwtDecoder.setJwtValidator(validator);
         return nimbusJwtDecoder;
     }

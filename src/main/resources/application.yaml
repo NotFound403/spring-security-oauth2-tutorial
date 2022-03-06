@@ -9,7 +9,7 @@ logging:
 # 自定义jwt 配置
 jwt:
   cert-info:
-    public-key-location: publickey.cer
+    public-key-location: pub.cer
   claims:
     issuer: https://felord.cn
     expires-at: 604800
