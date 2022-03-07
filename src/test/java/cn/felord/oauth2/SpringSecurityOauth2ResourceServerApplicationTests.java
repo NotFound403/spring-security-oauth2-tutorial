@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 @SpringBootTest
-class SpringSecurityOauth2TutorialApplicationTests {
+class SpringSecurityOauth2ResourceServerApplicationTests {
 
     /**
      * The Jwt decoder.

@@ -7,9 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author  felord.cn
  */
 @SpringBootApplication
-public class Oauth2TutorialApplication {
+public class Oauth2ResourceServerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(Oauth2TutorialApplication.class, args);
+        SpringApplication.run(Oauth2ResourceServerApplication.class, args);
     }
 }
