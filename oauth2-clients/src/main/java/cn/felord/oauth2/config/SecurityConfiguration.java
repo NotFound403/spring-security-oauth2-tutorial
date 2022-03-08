@@ -68,7 +68,8 @@ public class SecurityConfiguration {
 
         http.authorizeRequests((requests) -> requests
 //                        .antMatchers("/foo/bar").anonymous()
-                        .antMatchers("/foo/bar").hasAnyAuthority("ROLE_ANONYMOUS","SCOPE_userinfo")
+                        .antMatchers("/foo/bar")
+                        .hasAnyAuthority("ROLE_ANONYMOUS","SCOPE_userinfo")
                         .anyRequest().authenticated())
                 .oauth2Login().authorizationEndpoint()
                 // 授权端点配置

@@ -43,7 +43,7 @@ spring:
             token-uri: https://api.weixin.qq.com/sns/oauth2/access_token
             user-info-uri: https://api.weixin.qq.com/sns/userinfo
           felord:
-            #todo       provider 尽量用域名  不要用localhost或者IP  而且要和well-known接口中保持一致
+            #todo       provider 尽量用域名  不建议用localhost或者IP  而且要和well-known接口中保持一致
             issuer-uri: http://localhost:9000
             user-info-uri: http://localhost:9000/oauth2/user
             user-name-attribute: name
