@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-class SpringSecurityOauth2TutorialApplicationTests {
+class SpringSecurityOauth2ClientApplicationTests {
 
     @Test
     void contextLoads() {

@@ -1,4 +1,4 @@
-package cn.felord.spring.security.oauth2.server;
+package cn.felord.spring.security.oauth2.server.endpoint;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
