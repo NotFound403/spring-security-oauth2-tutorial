@@ -15,16 +15,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
@@ -39,11 +35,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.security.KeyStore;
-import java.security.PublicKey;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPublicKey;
 import java.util.UUID;
 
 /**
@@ -62,12 +53,6 @@ public class AuthorizationServerConfiguration {
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        // Authorization Server 默认配置
-        this.defaultOAuth2AuthorizationServerConfigurer(http);
-        return http.formLogin(Customizer.withDefaults()).build();
-    }
-
-    void defaultOAuth2AuthorizationServerConfigurer(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer =
                 new OAuth2AuthorizationServerConfigurer<>();
         // TODO 你可以根据需求对authorizationServerConfigurer进行一些个性化配置
@@ -75,15 +60,19 @@ public class AuthorizationServerConfiguration {
 
         // 拦截 授权服务器相关的请求端点
         http.requestMatcher(authorizationServerEndpointsMatcher)
-                .authorizeRequests().anyRequest().authenticated().and()
+                .authorizeRequests().anyRequest().authenticated()
+                .and()
                 // 忽略掉相关端点的csrf
-                .csrf(csrf -> csrf.ignoringRequestMatchers(authorizationServerEndpointsMatcher))
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers(authorizationServerEndpointsMatcher))
                 // 开启form登录
                 .formLogin()
                 .and()
                 // 应用 授权服务器的配置
                 .apply(authorizationServerConfigurer);
+        return http.build();
     }
+
 
     /**
      * 注册一个客户端应用
@@ -115,7 +104,8 @@ public class AuthorizationServerConfiguration {
 //               此处为了避免频繁启动重复写入仓库
                 .id(id)
 //                client_secret_basic    客户端需要存明文   服务器存密文
-                .clientSecret(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode("secret"))
+                .clientSecret(PasswordEncoderFactories.createDelegatingPasswordEncoder()
+                        .encode("secret"))
 //                名称 可不定义
                 .clientName("felord")
 //                授权方法
@@ -139,7 +129,8 @@ public class AuthorizationServerConfiguration {
 //                JWT的配置项 包括TTL  是否复用refreshToken等等
                 .tokenSettings(TokenSettings.builder().build())
 //                配置客户端相关的配置项，包括验证密钥或者 是否需要授权页面
-                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+                .clientSettings(ClientSettings.builder()
+                        .requireAuthorizationConsent(true).build())
                 .build();
     }
 
@@ -152,8 +143,11 @@ public class AuthorizationServerConfiguration {
      * @return the o auth 2 authorization service
      */
     @Bean
-    public OAuth2AuthorizationService authorizationService(JdbcTemplate jdbcTemplate, RegisteredClientRepository registeredClientRepository) {
-        return new JdbcOAuth2AuthorizationService(jdbcTemplate, registeredClientRepository);
+    public OAuth2AuthorizationService authorizationService(
+            JdbcTemplate jdbcTemplate,
+            RegisteredClientRepository registeredClientRepository) {
+        return new JdbcOAuth2AuthorizationService(jdbcTemplate,
+                registeredClientRepository);
     }
 
     /**
@@ -164,8 +158,11 @@ public class AuthorizationServerConfiguration {
      * @return the o auth 2 authorization consent service
      */
     @Bean
-    public OAuth2AuthorizationConsentService authorizationConsentService(JdbcTemplate jdbcTemplate, RegisteredClientRepository registeredClientRepository) {
-        return new JdbcOAuth2AuthorizationConsentService(jdbcTemplate, registeredClientRepository);
+    public OAuth2AuthorizationConsentService authorizationConsentService(
+            JdbcTemplate jdbcTemplate,
+            RegisteredClientRepository registeredClientRepository) {
+        return new JdbcOAuth2AuthorizationConsentService(jdbcTemplate,
+                registeredClientRepository);
     }
 
     /**
