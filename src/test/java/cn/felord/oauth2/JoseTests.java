@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
-import org.springframework.util.Assert;
 
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -123,6 +122,7 @@ public class JoseTests {
     @SneakyThrows
     @Test
     public void jwtDecode() {
+        //todo  token 可能会过期需要自省生成更换
        final String token = "eyJ4NXQjUzI1NiI6IlN4cXFkV1l4VDdCWnJkSC11VnBnQUhmWDJxMzRxUHl4eDRvblg2bXYtcUkiLCJqa3UiOiJodHRwczpcL1wvZmVsb3JkLmNuXC9vYXV0aDJcL2p3a3MiLCJraWQiOiJqb3NlIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ." +
                 "eyJzdWIiOiJmZWxvcmQiLCJhdWQiOlsiaHR0cHM6XC9cL2NsaWVudDEuZmVsb3JkLmNuIiwiaHR0cHM6XC9cL2NsaWVudDIuZmVsb3JkLmNuIl0sIm5iZiI6MTY0NjIzNjY2Miwic2NvcGUiOlsibWVzc2FnZS5yZWFkIiwibWVzc2FnZS53cml0ZSJdLCJpc3MiOiJodHRwczpcL1wvZmVsb3JkLmNuIiwiZXhwIjoxNjQ2ODQxNTIyLCJpYXQiOjE2NDYyMzY3MjIsImp0aSI6IjQ3OGNmZmRmLTllNWYtNDlhNy1iNjlkLWI3YzFhNzY1YTNiOCJ9." +
                 "BEcV65GcRqwaaaRI1TUI2s5b7K6ewyV5-7g_OTWCBuS-WzdJX4v5kS5YkK-4ABwaQWZJgNsV-zOxWvXBICSqHocs-oKd40Iiqz6DWFY8RrfqN-HwphELbPLyfrIWcJ7iVr3t-vF3NWcLZaPuv0PGEn4n4mkdQXpu59FDxUgX-XR_i-kSZwgiw_NgLd7z0UpLlD3Cm3kxnwAFAPf_V1eQWjKhZvXYto4ws-j0lZSf1LGDDRu8d5WS4hPRt6h4-x9-ZPZIoxHifhrPfVG3qQUZ0MlA1mKqfcrVUexgFqN8bcTP4krkwDbodsYVqQPHKFMWaIPHcLvHYp5_hkuzxCBT7A";
