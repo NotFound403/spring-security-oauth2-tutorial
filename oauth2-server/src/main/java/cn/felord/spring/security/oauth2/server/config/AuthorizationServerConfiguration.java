@@ -155,7 +155,7 @@ public class AuthorizationServerConfiguration {
     }
 
     /**
-     * Authorization consent service o auth 2 authorization consent service.
+     * 授权确认信息处理服务
      *
      * @param jdbcTemplate               the jdbc template
      * @param registeredClientRepository the registered client repository

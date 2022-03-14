@@ -79,11 +79,11 @@ public class AuthorizationConsentController {
         static {
             scopeDescriptions.put(
                     "message.read",
-                    "This application will be able to read your message."
+                    "应用将获取你的个人信息读取权限"
             );
             scopeDescriptions.put(
                     "message.write",
-                    "This application will be able to add new messages. It will also be able to edit and delete existing messages."
+                    "应用将能够对你的个人信息进行写、修改、删除操作"
             );
             scopeDescriptions.put(
                     "other.scope",
