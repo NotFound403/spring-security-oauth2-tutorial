@@ -44,7 +44,7 @@ import java.util.UUID;
 public class AuthorizationServerConfiguration {
 
     /**
-     * Authorization server 集成
+     * Authorization server 集成 优先级要高一些
      *
      * @param http the http
      * @return the security filter chain
