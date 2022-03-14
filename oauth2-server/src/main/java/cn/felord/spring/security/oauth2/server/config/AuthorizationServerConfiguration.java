@@ -42,6 +42,7 @@ import java.util.UUID;
  */
 @Configuration(proxyBeanMethods = false)
 public class AuthorizationServerConfiguration {
+    private static final String CUSTOM_CONSENT_PAGE_URI = "/oauth2/consent";
 
     /**
      * Authorization server 集成 优先级要高一些
@@ -55,7 +56,10 @@ public class AuthorizationServerConfiguration {
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer =
                 new OAuth2AuthorizationServerConfigurer<>();
-        // TODO 你可以根据需求对authorizationServerConfigurer进行一些个性化配置
+        //  把自定义的授权确认URI加入配置
+        authorizationServerConfigurer.authorizationEndpoint(authorizationEndpointConfigurer->
+                authorizationEndpointConfigurer.consentPage(CUSTOM_CONSENT_PAGE_URI));
+
         RequestMatcher authorizationServerEndpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
         // 拦截 授权服务器相关的请求端点
