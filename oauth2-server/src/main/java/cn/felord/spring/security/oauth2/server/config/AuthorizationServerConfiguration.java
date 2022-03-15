@@ -35,7 +35,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.security.KeyStore;
-import java.util.UUID;
 
 /**
  * The type Authorization server configuration.
@@ -102,16 +101,14 @@ public class AuthorizationServerConfiguration {
     }
 
     private RegisteredClient createRegisteredClient(final String id) {
-        return RegisteredClient.withId(UUID.randomUUID().toString())
+        return RegisteredClient.withId(id)
 //               客户端ID和密码
                 .clientId("felord")
-//               此处为了避免频繁启动重复写入仓库
-                .id(id)
 //                client_secret_basic    客户端需要存明文   服务器存密文
                 .clientSecret(PasswordEncoderFactories.createDelegatingPasswordEncoder()
                         .encode("secret"))
 //                名称 可不定义
-                .clientName("felord")
+                .clientName("@码农小胖哥")
 //                授权方法
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 //                授权类型

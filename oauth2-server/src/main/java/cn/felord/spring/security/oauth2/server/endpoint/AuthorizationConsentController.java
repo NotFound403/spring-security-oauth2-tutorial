@@ -5,6 +5,7 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.web.OAuth2AuthorizationEndpointFilter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -13,22 +14,39 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
+/**
+ * 自定义用户确认页
+ *
+ * @author felord.cn
+ */
 @Controller
 public class AuthorizationConsentController {
     private final RegisteredClientRepository registeredClientRepository;
     private final OAuth2AuthorizationConsentService authorizationConsentService;
+    private final ScopeService scopeService;
 
     public AuthorizationConsentController(RegisteredClientRepository registeredClientRepository,
-                                          OAuth2AuthorizationConsentService authorizationConsentService) {
+                                          OAuth2AuthorizationConsentService authorizationConsentService,
+                                          ScopeService scopeService
+    ) {
         this.registeredClientRepository = registeredClientRepository;
         this.authorizationConsentService = authorizationConsentService;
+        this.scopeService = scopeService;
     }
 
+    /**
+     * {@link OAuth2AuthorizationEndpointFilter} 会302重定向到{@code  /oauth2/consent}
+     *
+     * @param principal 当前用户
+     * @param model     视图模型
+     * @param clientId  oauth2 client id
+     * @param scope     请求授权的scope
+     * @param state     state 值
+     * @return 自定义授权确认页面 consent.html
+     */
     @GetMapping(value = "/oauth2/consent")
     public String consent(Principal principal, Model model,
                           @RequestParam(OAuth2ParameterNames.CLIENT_ID) String clientId,
@@ -55,48 +73,17 @@ public class AuthorizationConsentController {
             }
         }
 
+        Set<OAuth2Scope> scopesToApproves = scopeService.findScopesByNames(scopesToApprove);
+        Set<OAuth2Scope> previouslyApprovedScopesSet = scopeService.findScopesByNames(previouslyApprovedScopes);
+
+        String clientName = registeredClient.getClientName();
         model.addAttribute("clientId", clientId);
+        model.addAttribute("clientName", clientName);
         model.addAttribute("state", state);
-        model.addAttribute("scopes", withDescription(scopesToApprove));
-        model.addAttribute("previouslyApprovedScopes", withDescription(previouslyApprovedScopes));
+        model.addAttribute("scopes", scopesToApproves);
+        model.addAttribute("previouslyApprovedScopes", previouslyApprovedScopesSet);
         model.addAttribute("principalName", principal.getName());
 
         return "consent";
-    }
-
-    private static Set<ScopeWithDescription> withDescription(Set<String> scopes) {
-        Set<ScopeWithDescription> scopeWithDescriptions = new HashSet<>();
-        for (String scope : scopes) {
-            scopeWithDescriptions.add(new ScopeWithDescription(scope));
-
-        }
-        return scopeWithDescriptions;
-    }
-
-    public static class ScopeWithDescription {
-        private static final String DEFAULT_DESCRIPTION = "UNKNOWN SCOPE - We cannot provide information about this permission, use caution when granting this.";
-        private static final Map<String, String> scopeDescriptions = new HashMap<>();
-        static {
-            scopeDescriptions.put(
-                    "message.read",
-                    "应用将获取你的个人信息读取权限"
-            );
-            scopeDescriptions.put(
-                    "message.write",
-                    "应用将能够对你的个人信息进行写、修改、删除操作"
-            );
-            scopeDescriptions.put(
-                    "other.scope",
-                    "This is another scope example of a scope description."
-            );
-        }
-
-        public final String scope;
-        public final String description;
-
-        ScopeWithDescription(String scope) {
-            this.scope = scope;
-            this.description = scopeDescriptions.getOrDefault(scope, DEFAULT_DESCRIPTION);
-        }
     }
 }

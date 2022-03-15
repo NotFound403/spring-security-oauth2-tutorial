@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <title>Custom consent page - Consent required</title>
+    <title>@码农小胖哥</title>
     <style>
         body {
             background-color: aliceblue;
@@ -27,7 +27,7 @@
         <div class="col text-center">
             <p>
                 应用
-                <span class="font-weight-bold text-primary" th:text="${clientId}"></span>
+                <span class="font-weight-bold text-primary" th:text="${clientName}"></span>
                 想要访问您的账号
                 <span class="font-weight-bold" th:text="${principalName}"></span>
             </p>
@@ -84,6 +84,7 @@
                     <br/>如果您不同意，请单击<span class="font-weight-bold text-primary">取消授权</span>，将不会为上述应用程序提供任何您的信息。
                 </small>
             </p>
+            <p><img src="https://asset.felord.cn/blog/20201022220055.png" alt="" height="130" width="355"></p>
         </div>
     </div>
 </div>
