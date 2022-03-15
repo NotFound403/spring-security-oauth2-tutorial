@@ -36,7 +36,7 @@ public class ScopeService {
      * @param names
      * @return
      */
-    public Set<OAuth2Scope> findScopesByNames(Set<String> names) {
+    public Set<OAuth2Scope> findByNames(Set<String> names) {
         return names.stream()
                 .map(SCOPES::get)
                 .filter(Objects::nonNull)

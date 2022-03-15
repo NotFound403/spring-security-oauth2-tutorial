@@ -38,7 +38,7 @@ public class AuthorizationConsentController {
     }
 
     /**
-     * {@link OAuth2AuthorizationEndpointFilter} 会302重定向到{@code  /oauth2/consent}
+     * {@link OAuth2AuthorizationEndpointFilter} 会302重定向到{@code  /oauth2/consent}并携带入参
      *
      * @param principal 当前用户
      * @param model     视图模型
@@ -53,18 +53,17 @@ public class AuthorizationConsentController {
                           @RequestParam(OAuth2ParameterNames.SCOPE) String scope,
                           @RequestParam(OAuth2ParameterNames.STATE) String state) {
 
-        // Remove scopes that were already approved
+        RegisteredClient registeredClient = this.registeredClientRepository.findByClientId(clientId);
+        String id = registeredClient.getId();
+        OAuth2AuthorizationConsent currentAuthorizationConsent =
+                this.authorizationConsentService.findById(id, principal.getName());
+
+        Set<String> authorizedScopes = currentAuthorizationConsent != null ?
+                currentAuthorizationConsent.getScopes() : Collections.emptySet();
+
         Set<String> scopesToApprove = new HashSet<>();
         Set<String> previouslyApprovedScopes = new HashSet<>();
-        RegisteredClient registeredClient = this.registeredClientRepository.findByClientId(clientId);
-        OAuth2AuthorizationConsent currentAuthorizationConsent =
-                this.authorizationConsentService.findById(registeredClient.getId(), principal.getName());
-        Set<String> authorizedScopes;
-        if (currentAuthorizationConsent != null) {
-            authorizedScopes = currentAuthorizationConsent.getScopes();
-        } else {
-            authorizedScopes = Collections.emptySet();
-        }
+
         for (String requestedScope : StringUtils.delimitedListToStringArray(scope, " ")) {
             if (authorizedScopes.contains(requestedScope)) {
                 previouslyApprovedScopes.add(requestedScope);
@@ -73,8 +72,8 @@ public class AuthorizationConsentController {
             }
         }
 
-        Set<OAuth2Scope> scopesToApproves = scopeService.findScopesByNames(scopesToApprove);
-        Set<OAuth2Scope> previouslyApprovedScopesSet = scopeService.findScopesByNames(previouslyApprovedScopes);
+        Set<OAuth2Scope> scopesToApproves = scopeService.findByNames(scopesToApprove);
+        Set<OAuth2Scope> previouslyApprovedScopesSet = scopeService.findByNames(previouslyApprovedScopes);
 
         String clientName = registeredClient.getClientName();
         model.addAttribute("clientId", clientId);
