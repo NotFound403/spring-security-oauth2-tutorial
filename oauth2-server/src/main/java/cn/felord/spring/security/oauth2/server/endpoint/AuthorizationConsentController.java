@@ -30,8 +30,7 @@ public class AuthorizationConsentController {
 
     public AuthorizationConsentController(RegisteredClientRepository registeredClientRepository,
                                           OAuth2AuthorizationConsentService authorizationConsentService,
-                                          ScopeService scopeService
-    ) {
+                                          ScopeService scopeService) {
         this.registeredClientRepository = registeredClientRepository;
         this.authorizationConsentService = authorizationConsentService;
         this.scopeService = scopeService;
