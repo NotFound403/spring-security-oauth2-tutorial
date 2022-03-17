@@ -7,4 +7,4 @@
 
 详细说明参见[Spring Security 与 OAuth2](https://blog.csdn.net/qq_35067322/category_11691173.html)专题教程
 
-![](tutorial.png)
+<img src="tutorial.png" style="zoom:75%;" />
