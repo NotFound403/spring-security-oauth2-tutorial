@@ -1,6 +1,7 @@
 ## Spring Security OAuth2相关教程
 
-自定义授权确认页面DEMO
+
+#### Spring Authorization Server自定义授权确认页面DEMO
 
 - 依次启动授权服务器、客户端
 - 浏览器访问`http://127.0.0.1/foo/bar`
