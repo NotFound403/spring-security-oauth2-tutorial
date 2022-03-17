@@ -41,7 +41,7 @@ public class FooController {
     }
 
     /**
-     * 测试Spring Authorization Server
+     * 测试Spring Authorization Server，必须指定客户端
      *
      * @see HttpSecurity#oauth2Client()
      * @param client the client
