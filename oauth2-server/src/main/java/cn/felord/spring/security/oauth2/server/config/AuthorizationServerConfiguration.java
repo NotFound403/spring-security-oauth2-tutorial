@@ -135,7 +135,8 @@ public class AuthorizationServerConfiguration {
 //                配置客户端相关的配置项，包括验证密钥或者 是否需要授权页面
                 .clientSettings(ClientSettings.builder()
                         .tokenEndpointAuthenticationSigningAlgorithm(SignatureAlgorithm.RS256)
-                        .jwkSetUrl("http://localhost:9000/oauth2/jwks")
+                        // private key jwt
+                        .jwkSetUrl("http://localhost:8082/oauth2/jwks")
                         .build())
                 .build();
     }

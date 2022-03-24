@@ -27,6 +27,11 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationExchange;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.core.endpoint.PkceParameterNames;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -35,7 +40,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * 兼容微信请求参数的请求参数封装工具类,扩展了{@link OAuth2AuthorizationCodeGrantRequestEntityConverter}
@@ -53,6 +62,11 @@ public class WechatOAuth2AuthorizationCodeGrantRequestEntityConverter
     private static final ClientAuthenticationMethod JWT_CLIENT_ASSERTION_AUTHENTICATION_METHOD = new ClientAuthenticationMethod("urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
     private static final String WECHAT_ID = "wechat";
     private final OAuth2AuthorizationCodeGrantRequestEntityConverter defaultConverter = new OAuth2AuthorizationCodeGrantRequestEntityConverter();
+    private final JwtEncoder jwtEncoder;
+
+    public WechatOAuth2AuthorizationCodeGrantRequestEntityConverter(JwtEncoder jwtEncoder) {
+        this.jwtEncoder = jwtEncoder;
+    }
 
     /**
      * Returns the {@link RequestEntity} used for the Access Token Request.
@@ -78,7 +92,7 @@ public class WechatOAuth2AuthorizationCodeGrantRequestEntityConverter
     }
 
 
-    private   MultiValueMap<String, String> jwtClientAssertionConvert(OAuth2AuthorizationCodeGrantRequest authorizationCodeGrantRequest) {
+    private MultiValueMap<String, String> jwtClientAssertionConvert(OAuth2AuthorizationCodeGrantRequest authorizationCodeGrantRequest) {
         ClientRegistration clientRegistration = authorizationCodeGrantRequest.getClientRegistration();
         OAuth2AuthorizationExchange authorizationExchange = authorizationCodeGrantRequest.getAuthorizationExchange();
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
@@ -103,12 +117,36 @@ public class WechatOAuth2AuthorizationCodeGrantRequestEntityConverter
             parameters.add(PkceParameterNames.CODE_VERIFIER, codeVerifier);
         }
         if (JWT_CLIENT_ASSERTION_AUTHENTICATION_METHOD.equals(clientAuthenticationMethod)) {
-            parameters.add(OAuth2ParameterNames.CLIENT_ASSERTION_TYPE,clientAuthenticationMethod.getValue());
-            parameters.add(OAuth2ParameterNames.CLIENT_ASSERTION,"eyJ4NXQjUzI1NiI6IlN4cXFkV1l4VDdCWnJkSC11VnBnQUhmWDJxMzRxUHl4eDRvblg2bXYtcUkiLCJraWQiOiJqb3NlIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJmZWxvcmQiLCJhdWQiOlsiaHR0cDpcL1wvbG9jYWxob3N0OjkwMDBcL29hdXRoMlwvdG9rZW4iLCJodHRwOlwvXC9sb2NhbGhvc3Q6OTAwMFwvb2F1dGgyXC9yZXZva2UiLCJodHRwOlwvXC9sb2NhbGhvc3Q6OTAwMFwvb2F1dGgyXC9pbnRyb3NwZWN0Il0sIm5iZiI6MTY0ODAyMzk5NCwic2NvcGUiOlsibWVzc2FnZS5yZWFkIiwibWVzc2FnZS53cml0ZSJdLCJpc3MiOiJmZWxvcmQiLCJleHAiOjE2NDgwMjQyOTQsImlhdCI6MTY0ODAyMzk5NH0.TObyX7Z2MD_k5eqaaJuJcJEa8_j_mQScP7c7MD4EOH0X102BPQadGUsGEuSNqrXEEA8hUks6rxflQKsEB3MpfBpUt7DifL_LA8QmcQucW1Fq3lJmX9a-2NiSmCs-YaLUpQxZSp0rJDIhcMf1YVQgRLA8oOIk2LOG9UOmbssWMmyQUkOQ1l_SYqElNBSOQXD7tVF80drFQ4pnqmsnQKgTJPPCWvq3OqZfqA4X8LuKj1rK-Idn6pbf5KgrdcodJB0nd77ihI2gcXMiDv00FWyEIROroQIlBIF0p-mZ_qScSPEGyvCtw7LvHeHyASmGTF1mDEepe1BRMfpFuQMLHkHPyg");
-
+            parameters.add(OAuth2ParameterNames.CLIENT_ASSERTION_TYPE, clientAuthenticationMethod.getValue());
+            parameters.add(OAuth2ParameterNames.CLIENT_ASSERTION, generateClientAssertion(clientRegistration));
         }
         return parameters;
 
+    }
+
+
+    private String generateClientAssertion(ClientRegistration clientRegistration) {
+        JwsHeader.Builder jwsHeaderBuilder = JwsHeader.with(SignatureAlgorithm.RS256);
+        Instant issuedAt = Instant.now();
+        Instant expiresAt = issuedAt.plus(Duration.ofMinutes(1));
+        String clientId = clientRegistration.getClientId();
+        ClientRegistration.ProviderDetails providerDetails = clientRegistration.getProviderDetails();
+        Map<String, Object> configurationMetadata = providerDetails.getConfigurationMetadata();
+        String revocationEndpoint = (String) configurationMetadata.get("revocation_endpoint");
+        String introspectionEndpoint = (String) configurationMetadata.get("introspection_endpoint");
+        JwtClaimsSet.Builder claimsBuilder = JwtClaimsSet.builder()
+                // oidc  定义
+                .issuer(clientId)
+                // oidc 定义
+                .subject(clientId)
+                .audience(Arrays.asList(providerDetails.getTokenUri(),
+                        introspectionEndpoint,
+                        revocationEndpoint))
+                .issuedAt(issuedAt)
+                .expiresAt(expiresAt)
+                .notBefore(issuedAt)
+                .claim(OAuth2ParameterNames.SCOPE, Collections.emptyMap());
+        return jwtEncoder.encode(JwtEncoderParameters.from(jwsHeaderBuilder.build(),claimsBuilder.build())).getTokenValue();
     }
 
 
