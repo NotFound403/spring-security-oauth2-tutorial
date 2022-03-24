@@ -116,8 +116,8 @@ public class WechatOAuth2AuthorizationCodeGrantRequestEntityConverter
         if (codeVerifier != null) {
             parameters.add(PkceParameterNames.CODE_VERIFIER, codeVerifier);
         }
-        if (JWT_CLIENT_ASSERTION_AUTHENTICATION_METHOD.equals(clientAuthenticationMethod)) {
-            parameters.add(OAuth2ParameterNames.CLIENT_ASSERTION_TYPE, clientAuthenticationMethod.getValue());
+        if (ClientAuthenticationMethod.PRIVATE_KEY_JWT.equals(clientAuthenticationMethod)) {
+            parameters.add(OAuth2ParameterNames.CLIENT_ASSERTION_TYPE, JWT_CLIENT_ASSERTION_AUTHENTICATION_METHOD.getValue());
             parameters.add(OAuth2ParameterNames.CLIENT_ASSERTION, generateClientAssertion(clientRegistration));
         }
         return parameters;

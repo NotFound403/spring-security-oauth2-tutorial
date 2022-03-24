@@ -12,7 +12,7 @@ spring:
             #            redirect-uri:  '{baseUrl}/login/oauth2/code/{registrationId}'
             redirect-uri:  'http://127.0.0.1:8082/foo/bar'
             authorization-grant-type: authorization_code
-            client-authentication-method: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+            client-authentication-method: private_key_jwt
             scope: message.read,message.write
         provider:
           felord:
