@@ -18,7 +18,7 @@ import java.security.KeyStore;
  * @author felord.cn
  */
 @Configuration(proxyBeanMethods = false)
-public class JWKConfiguration {
+public class JoseConfiguration {
 
     /**
      * 加载JWK资源
