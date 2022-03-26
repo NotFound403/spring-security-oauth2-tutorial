@@ -104,7 +104,7 @@ public class AuthorizationServerConfiguration {
         return RegisteredClient.withId(id)
 //               客户端ID和密码
                 .clientId("felord")
-//                client_secret_basic    客户端需要存明文   服务器存密文      PRIVATE_KEY_JWT 不需要这个
+//                      PRIVATE_KEY_JWT 不需要这个  CLIENT_SECRET_JWT需要
                 .clientSecret("226ab006e9494b0e84893cd7b402cd8e")
 //                名称 可不定义
                 .clientName("@码农小胖哥")
