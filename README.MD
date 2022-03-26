@@ -1,7 +1,6 @@
 ## Spring Security OAuth2相关教程
 详细讲解参见[Spring Security 与 OAuth2](https://blog.csdn.net/qq_35067322/category_11691173.html)专题教程
 ### 目录
-### 目录
 
 - [1- 目录](https://felord.blog.csdn.net/article/details/123540788)
 - [2-直观体验OAuth2](https://felord.blog.csdn.net/article/details/123536984)
