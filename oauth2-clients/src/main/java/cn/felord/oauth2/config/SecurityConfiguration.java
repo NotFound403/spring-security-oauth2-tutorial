@@ -1,6 +1,10 @@
 package cn.felord.oauth2.config;
 
-import cn.felord.oauth2.wechat.*;
+import cn.felord.oauth2.wechat.DelegatingOAuth2UserService;
+import cn.felord.oauth2.wechat.WechatMapOAuth2AccessTokenResponseConverter;
+import cn.felord.oauth2.wechat.WechatOAuth2AuthorizationCodeGrantRequestEntityConverter;
+import cn.felord.oauth2.wechat.WechatOAuth2AuthorizationRequestCustomizer;
+import cn.felord.oauth2.wechat.WechatOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -21,7 +25,6 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.http.converter.OAuth2AccessTokenResponseHttpMessageConverter;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.client.RestTemplate;
 
@@ -60,12 +63,12 @@ public class SecurityConfiguration {
      * @throws Exception exception
      */
     @Bean
-    SecurityFilterChain customSecurityFilterChain(HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository, JwtEncoder jwtEncoder) throws Exception {
+    SecurityFilterChain customSecurityFilterChain(HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
 
         OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DelegatingOAuth2UserService<>(Collections.singletonMap("wechat", new WechatOAuth2UserService()));
 
         OAuth2AuthorizationRequestResolver authorizationRequestResolver = oAuth2AuthorizationRequestResolver(clientRegistrationRepository);
-        OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient = accessTokenResponseClient(jwtEncoder);
+        OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient = accessTokenResponseClient();
 
         http.authorizeRequests((requests) -> requests
 //                        .antMatchers("/foo/bar").anonymous()
@@ -104,9 +107,9 @@ public class SecurityConfiguration {
      *
      * @return OAuth2AccessTokenResponseClient
      */
-    private OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient(JwtEncoder jwtEncoder) {
+    private OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient() {
         DefaultAuthorizationCodeTokenResponseClient tokenResponseClient = new DefaultAuthorizationCodeTokenResponseClient();
-        tokenResponseClient.setRequestEntityConverter(new WechatOAuth2AuthorizationCodeGrantRequestEntityConverter(jwtEncoder));
+        tokenResponseClient.setRequestEntityConverter(new WechatOAuth2AuthorizationCodeGrantRequestEntityConverter());
 
         OAuth2AccessTokenResponseHttpMessageConverter tokenResponseHttpMessageConverter = new OAuth2AccessTokenResponseHttpMessageConverter();
         // 微信返回的content-type 是 text-plain

@@ -16,17 +16,18 @@
 
 package cn.felord.oauth2.wechat;
 
+import cn.felord.oauth2.config.JwkResolver;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
+import org.springframework.security.oauth2.client.endpoint.NimbusJwtClientAuthenticationParametersConverter;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequestEntityConverter;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationExchange;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
-import org.springframework.security.oauth2.core.endpoint.PkceParameterNames;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -59,14 +60,10 @@ import java.util.Map;
 public class WechatOAuth2AuthorizationCodeGrantRequestEntityConverter
         implements Converter<OAuth2AuthorizationCodeGrantRequest, RequestEntity<?>> {
     private static final HttpHeaders DEFAULT_TOKEN_REQUEST_HEADERS = getDefaultTokenRequestHeaders();
-    private static final ClientAuthenticationMethod JWT_CLIENT_ASSERTION_AUTHENTICATION_METHOD = new ClientAuthenticationMethod("urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
     private static final String WECHAT_ID = "wechat";
     private final OAuth2AuthorizationCodeGrantRequestEntityConverter defaultConverter = new OAuth2AuthorizationCodeGrantRequestEntityConverter();
-    private final JwtEncoder jwtEncoder;
+    private JwtEncoder jwtEncoder;
 
-    public WechatOAuth2AuthorizationCodeGrantRequestEntityConverter(JwtEncoder jwtEncoder) {
-        this.jwtEncoder = jwtEncoder;
-    }
 
     /**
      * Returns the {@link RequestEntity} used for the Access Token Request.
@@ -77,51 +74,16 @@ public class WechatOAuth2AuthorizationCodeGrantRequestEntityConverter
     @Override
     public RequestEntity<?> convert(OAuth2AuthorizationCodeGrantRequest authorizationCodeGrantRequest) {
         ClientRegistration clientRegistration = authorizationCodeGrantRequest.getClientRegistration();
-        HttpHeaders headers = getTokenRequestHeaders(clientRegistration);
-
         String tokenUri = clientRegistration.getProviderDetails().getTokenUri();
         // 针对微信的定制  WECHAT_ID表示为微信公众号专用的registrationId
         if (WECHAT_ID.equals(clientRegistration.getRegistrationId())) {
             MultiValueMap<String, String> queryParameters = this.buildWechatQueryParameters(authorizationCodeGrantRequest);
             URI uri = UriComponentsBuilder.fromUriString(tokenUri).queryParams(queryParameters).build().toUri();
-            return RequestEntity.get(uri).headers(headers).build();
+            return RequestEntity.get(uri).build();
         } else {
-            defaultConverter.setParametersConverter(this::jwtClientAssertionConvert);
+            defaultConverter.addParametersConverter(new NimbusJwtClientAuthenticationParametersConverter<>(new JwkResolver()));
             return defaultConverter.convert(authorizationCodeGrantRequest);
         }
-    }
-
-
-    private MultiValueMap<String, String> jwtClientAssertionConvert(OAuth2AuthorizationCodeGrantRequest authorizationCodeGrantRequest) {
-        ClientRegistration clientRegistration = authorizationCodeGrantRequest.getClientRegistration();
-        OAuth2AuthorizationExchange authorizationExchange = authorizationCodeGrantRequest.getAuthorizationExchange();
-        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
-        parameters.add(OAuth2ParameterNames.GRANT_TYPE, authorizationCodeGrantRequest.getGrantType().getValue());
-        parameters.add(OAuth2ParameterNames.CODE, authorizationExchange.getAuthorizationResponse().getCode());
-        String redirectUri = authorizationExchange.getAuthorizationRequest().getRedirectUri();
-        String codeVerifier = authorizationExchange.getAuthorizationRequest()
-                .getAttribute(PkceParameterNames.CODE_VERIFIER);
-        if (redirectUri != null) {
-            parameters.add(OAuth2ParameterNames.REDIRECT_URI, redirectUri);
-        }
-        ClientAuthenticationMethod clientAuthenticationMethod = clientRegistration.getClientAuthenticationMethod();
-        if (!ClientAuthenticationMethod.CLIENT_SECRET_BASIC.equals(clientAuthenticationMethod)
-                && !ClientAuthenticationMethod.BASIC.equals(clientAuthenticationMethod)) {
-            parameters.add(OAuth2ParameterNames.CLIENT_ID, clientRegistration.getClientId());
-        }
-        if (ClientAuthenticationMethod.CLIENT_SECRET_POST.equals(clientAuthenticationMethod)
-                || ClientAuthenticationMethod.POST.equals(clientAuthenticationMethod)) {
-            parameters.add(OAuth2ParameterNames.CLIENT_SECRET, clientRegistration.getClientSecret());
-        }
-        if (codeVerifier != null) {
-            parameters.add(PkceParameterNames.CODE_VERIFIER, codeVerifier);
-        }
-        if (ClientAuthenticationMethod.PRIVATE_KEY_JWT.equals(clientAuthenticationMethod)) {
-            parameters.add(OAuth2ParameterNames.CLIENT_ASSERTION_TYPE, JWT_CLIENT_ASSERTION_AUTHENTICATION_METHOD.getValue());
-            parameters.add(OAuth2ParameterNames.CLIENT_ASSERTION, generateClientAssertion(clientRegistration));
-        }
-        return parameters;
-
     }
 
 
@@ -146,7 +108,7 @@ public class WechatOAuth2AuthorizationCodeGrantRequestEntityConverter
                 .expiresAt(expiresAt)
                 .notBefore(issuedAt)
                 .claim(OAuth2ParameterNames.SCOPE, Collections.emptyMap());
-        return jwtEncoder.encode(JwtEncoderParameters.from(jwsHeaderBuilder.build(),claimsBuilder.build())).getTokenValue();
+        return jwtEncoder.encode(JwtEncoderParameters.from(jwsHeaderBuilder.build(), claimsBuilder.build())).getTokenValue();
     }
 
 

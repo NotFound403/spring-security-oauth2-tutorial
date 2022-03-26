@@ -5,7 +5,6 @@ spring:
         registration:
           felord:
             client-id: felord
-            client-secret: secret
             #            isValidRedirectUri
             #            http://127.0.0.1:8082/oauth2/authorization/felord
             #todo        redirect-uri:  '{baseUrl}/foo/bar' 错误的写法  根据oauth2协议localhost不可被解析
