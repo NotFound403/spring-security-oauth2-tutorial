@@ -4,7 +4,7 @@
 我把所有的DEMO放在一个分支里，相关的知识点太多，不容易消化，每个分支都有不同的侧重点。
 ### 目录
 
-- [1- 目录](https://felord.blog.csdn.net/article/details/123540788)
+- [1-Spring Security OAuth2专栏介绍](https://blog.csdn.net/qq_35067322/article/details/123536510)
 - [2-直观体验OAuth2](https://felord.blog.csdn.net/article/details/123536984)
 - [3-OAuth2登录流程分析](https://felord.blog.csdn.net/article/details/123537245)
 - [4-OAuth2.0协议简单认识](https://felord.blog.csdn.net/article/details/123537835)
