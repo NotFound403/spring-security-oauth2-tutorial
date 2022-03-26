@@ -43,7 +43,7 @@
 - [26-ProviderContextFilter](https://felord.blog.csdn.net/article/details/123610574)
 - [27-令牌自省OAuth2TokenIntrospectionEndpointFilter](https://blog.csdn.net/qq_35067322/article/details/123634847)
 - [28-JWKSet公钥令牌端点过滤器](https://blog.csdn.net/qq_35067322/article/details/123656408)
-- [29-授权服务器配置信息端点过滤器OAuth2AuthorizationServerMetadataEndpointFilter](https://blog.csdn.net/qq_35067322/article/details/123656531)
+- [29-授权服务器配置信息端点过滤器](https://blog.csdn.net/qq_35067322/article/details/123656531)
 - [30-OAuth2授权端点配置类](https://blog.csdn.net/qq_35067322/article/details/123685646)
 - [31-授权服务器如何处理客户端授权请求](https://blog.csdn.net/qq_35067322/article/details/123712758)
 - [32-Spring Authorization Server 0.2.3 的变化](https://blog.csdn.net/qq_35067322/article/details/123742600)
