@@ -16,23 +16,25 @@
 
 package cn.felord.oauth2.wechat;
 
+import com.nimbusds.jose.jwk.OctetSequenceKey;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
+import org.springframework.security.oauth2.client.endpoint.NimbusJwtClientAuthenticationParametersConverter;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequestEntityConverter;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationExchange;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
+import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.UnsupportedEncodingException;
+import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
@@ -48,9 +50,8 @@ import java.util.Collections;
  */
 public class WechatOAuth2AuthorizationCodeGrantRequestEntityConverter
         implements Converter<OAuth2AuthorizationCodeGrantRequest, RequestEntity<?>> {
-    private static final HttpHeaders DEFAULT_TOKEN_REQUEST_HEADERS = getDefaultTokenRequestHeaders();
     private static final String WECHAT_ID = "wechat";
-    private final Converter<OAuth2AuthorizationCodeGrantRequest,RequestEntity<?>> defaultConverter = new  OAuth2AuthorizationCodeGrantRequestEntityConverter();
+    private final OAuth2AuthorizationCodeGrantRequestEntityConverter defaultConverter = new  OAuth2AuthorizationCodeGrantRequestEntityConverter();
     /**
      * Returns the {@link RequestEntity} used for the Access Token Request.
      *
@@ -60,15 +61,20 @@ public class WechatOAuth2AuthorizationCodeGrantRequestEntityConverter
     @Override
     public RequestEntity<?> convert(OAuth2AuthorizationCodeGrantRequest authorizationCodeGrantRequest) {
         ClientRegistration clientRegistration = authorizationCodeGrantRequest.getClientRegistration();
-        HttpHeaders headers = getTokenRequestHeaders(clientRegistration);
 
         String tokenUri = clientRegistration.getProviderDetails().getTokenUri();
         // 针对微信的定制  WECHAT_ID表示为微信公众号专用的registrationId
         if (WECHAT_ID.equals(clientRegistration.getRegistrationId())) {
             MultiValueMap<String, String> queryParameters = this.buildWechatQueryParameters(authorizationCodeGrantRequest);
             URI uri = UriComponentsBuilder.fromUriString(tokenUri).queryParams(queryParameters).build().toUri();
-            return RequestEntity.get(uri).headers(headers).build();
+            return RequestEntity.get(uri).build();
         }else {
+            defaultConverter.addParametersConverter(new NimbusJwtClientAuthenticationParametersConverter<>(registration ->{
+                Assert.isTrue(ClientAuthenticationMethod.CLIENT_SECRET_JWT.equals(registration.getClientAuthenticationMethod()),"CLIENT_SECRET_JWT Only");
+                byte[] pin = registration.getClientSecret().getBytes(StandardCharsets.UTF_8);
+                SecretKeySpec  secretKey = new SecretKeySpec(pin,"HmacSHA256");
+                return new  OctetSequenceKey.Builder(secretKey).build();
+            } ));
             return defaultConverter.convert(authorizationCodeGrantRequest);
         }
     }
@@ -93,29 +99,6 @@ public class WechatOAuth2AuthorizationCodeGrantRequestEntityConverter
         //secret
         formParameters.add("secret", clientRegistration.getClientSecret());
         return formParameters;
-    }
-
-
-    static HttpHeaders getTokenRequestHeaders(ClientRegistration clientRegistration) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.addAll(DEFAULT_TOKEN_REQUEST_HEADERS);
-        if (ClientAuthenticationMethod.CLIENT_SECRET_BASIC.equals(clientRegistration.getClientAuthenticationMethod())
-                || ClientAuthenticationMethod.BASIC.equals(clientRegistration.getClientAuthenticationMethod())) {
-            String clientId = encodeClientCredential(clientRegistration.getClientId());
-            String clientSecret = encodeClientCredential(clientRegistration.getClientSecret());
-            headers.setBasicAuth(clientId, clientSecret);
-        }
-        return headers;
-    }
-
-    private static String encodeClientCredential(String clientCredential) {
-        try {
-            return URLEncoder.encode(clientCredential, StandardCharsets.UTF_8.toString());
-        }
-        catch (UnsupportedEncodingException ex) {
-            // Will not happen since UTF-8 is a standard charset
-            throw new IllegalArgumentException(ex);
-        }
     }
 
     private static HttpHeaders getDefaultTokenRequestHeaders() {

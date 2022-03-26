@@ -17,10 +17,10 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
@@ -104,13 +104,15 @@ public class AuthorizationServerConfiguration {
         return RegisteredClient.withId(id)
 //               客户端ID和密码
                 .clientId("felord")
-//                client_secret_basic    客户端需要存明文   服务器存密文
-                .clientSecret(PasswordEncoderFactories.createDelegatingPasswordEncoder()
-                        .encode("secret"))
+//                client_secret_basic    客户端需要存明文   服务器存密文      PRIVATE_KEY_JWT 不需要这个
+                .clientSecret("226ab006e9494b0e84893cd7b402cd8e")
 //                名称 可不定义
                 .clientName("@码农小胖哥")
 //                授权方法
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                // jwt 断言必备
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_JWT)
+                .clientAuthenticationMethod(ClientAuthenticationMethod.PRIVATE_KEY_JWT)
 //                授权类型
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
@@ -131,7 +133,9 @@ public class AuthorizationServerConfiguration {
                 .tokenSettings(TokenSettings.builder().build())
 //                配置客户端相关的配置项，包括验证密钥或者 是否需要授权页面
                 .clientSettings(ClientSettings.builder()
-                        .requireAuthorizationConsent(true).build())
+//                        CLIENT_SECRET_JWT 采用HMAC SHA-256   注意区别于PRIVATE_KEY_JWT
+                        .tokenEndpointAuthenticationSigningAlgorithm(MacAlgorithm.HS256)
+                        .build())
                 .build();
     }
 
