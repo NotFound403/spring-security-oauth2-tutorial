@@ -2,6 +2,17 @@
 详细讲解参见[Spring Security 与 OAuth2](https://blog.csdn.net/qq_35067322/category_11691173.html)专题教程
 ### 为什么这么多分支？
 我把所有的DEMO放在一个分支里，相关的知识点太多，不容易消化，每个分支都有不同的侧重点。
+
+目前的分支有：
+- [x] **main**  体验Gitee三方授权。
+- [x] **wechat**  微信网页授权实现，对非标准OAuth2的定制改造，强调自定义能力。
+- [x] **oauth2client** 体验Spring Security OAuth2 Client功能。
+- [x] **resourceserver** 体验OAuth2 资源服务器功能。
+- [x] **jose**  jose规范讲解体验，十分重要，必须熟练掌握。
+- [x] **springauthserver** Spring Authorization Server初步体验入门。
+- [x] **customconsent** Spring Authorization Server自定义授权确认（consent required）页面。
+- [x] **privatekeyjwt** OAuth2客户端授权方式（Client Authentication Method）`private_key_jwt`实现（独家）。
+- [ ] **其它新分支持续更新中** 
 ### 目录
 
 - [1-Spring Security OAuth2专栏介绍](https://blog.csdn.net/qq_35067322/article/details/123536510)
