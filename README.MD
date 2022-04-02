@@ -12,6 +12,7 @@
 - [x] **springauthserver** Spring Authorization Server初步体验入门。
 - [x] **customconsent** Spring Authorization Server自定义授权确认（consent required）页面。
 - [x] **privatekeyjwt** OAuth2客户端授权方式（Client Authentication Method）`private_key_jwt`实现（独家）。
+- [x] **clientsecretjwt** OAuth2客户端授权方式（Client Authentication Method）`client_secret_jwt`实现（独家）。
 - [ ] **其它新分支持续更新中** 
 ### 目录
 
@@ -47,6 +48,10 @@
 - [30-OAuth2授权端点配置类](https://blog.csdn.net/qq_35067322/article/details/123685646)
 - [31-授权服务器如何处理客户端授权请求](https://blog.csdn.net/qq_35067322/article/details/123712758)
 - [32-Spring Authorization Server 0.2.3 的变化](https://blog.csdn.net/qq_35067322/article/details/123742600)
+- [33-授权码授权请求的具体逻辑](https://felord.blog.csdn.net/article/details/123795807)
+- [34-自定义OAuth2授权确认页面](https://felord.blog.csdn.net/article/details/123821842)
+- [35-OAuth2授权服务器客户端认证配置](https://felord.blog.csdn.net/article/details/123871892)
+- [36-OAuth2客户端认证过滤器详解](https://felord.blog.csdn.net/article/details/123899496)
 - 未上架，待补充 [催更](https://asset.felord.cn/blog/20210224102609.png)
 
 ### Gitee OAuth2登录规范类库相关DEMO
