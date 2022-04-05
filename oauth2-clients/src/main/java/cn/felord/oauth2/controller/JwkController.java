@@ -12,6 +12,7 @@ import java.util.Map;
 
 /**
  * 基于RFC7517
+ * @author felord.cn
  */
 @RestController
 public class JwkController {
@@ -31,5 +32,4 @@ public class JwkController {
         // 这里只会输出公钥JWK
         return JSONObjectUtils.parse(jwkSet.toString());
     }
-
 }
