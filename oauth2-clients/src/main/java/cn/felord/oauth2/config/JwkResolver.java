@@ -7,15 +7,14 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 
 import java.security.KeyStore;
-import java.util.function.Function;
 
-public class JwkResolver implements Function<ClientRegistration, JWK> {
+public class JwkResolver  {
 
 
     @SneakyThrows
-    @Override
     public JWK apply(ClientRegistration clientRegistration) {
-       //TODO  可以考虑 多租户 持久化
+        //todo clientRegistration的信息这里没有使用
+        // 你可以考虑 多租户 持久化
         String path = "client.jks";
         String alias = "jose";
         String pass = "felord.cn";
