@@ -1,5 +1,6 @@
 package cn.felord.spring.security.oauth2.server.endpoint;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,7 @@ public class UserInfoController {
      * @return authentication info
      */
     @GetMapping("/user")
+    @PreAuthorize("hasAuthority('SCOPE_userinfo')")
     public Authentication oauth2Userinfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
