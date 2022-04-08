@@ -5,7 +5,6 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -199,9 +198,9 @@ public class AuthorizationServerConfiguration {
      * @return the provider settings
      */
     @Bean
-    public ProviderSettings providerSettings(@Value("${server.port}") Integer port) {
+    public ProviderSettings providerSettings() {
         //TODO 生产应该使用域名
-        return ProviderSettings.builder().issuer("http://localhost:" + port).build();
+        return ProviderSettings.builder().issuer("http://localhost:8080/sas").build();
     }
 
 

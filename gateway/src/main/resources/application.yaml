@@ -1,0 +1,12 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: authorization-server
+          uri: http://localhost:9000
+          predicates:
+            - Path=/sas/**
+          filters:
+            - StripPrefix=1
+
+

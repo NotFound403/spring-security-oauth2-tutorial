@@ -18,7 +18,7 @@ spring:
         provider:
           felord:
             #todo       provider 尽量用域名  不要用localhost或者IP  而且要和well-known接口中保持一致
-            issuer-uri: http://localhost:9000
+            issuer-uri: http://localhost:8080/sas
 #           issuer-uri 可以简化下面的配置
 #            authorization-uri: http://localhost:9000/oauth2/authorize
 #            token-uri: http://localhost:9000/oauth2/token
