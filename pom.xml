@@ -12,6 +12,7 @@
     <description>spring-security-oauth2-tutorial</description>
 
     <modules>
+        <module>gateway</module>
         <module>oauth2-server</module>
         <module>oauth2-clients</module>
     </modules>
