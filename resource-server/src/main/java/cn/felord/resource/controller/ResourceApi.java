@@ -16,8 +16,8 @@ public class ResourceApi {
 
 
     @GetMapping("/foo")
-    public Map<String,String> foo(@AuthenticationPrincipal Jwt jwt){
+    public Map<String,Object> foo(@AuthenticationPrincipal Jwt jwt){
         System.out.println("jwt = " + jwt.getClaims());
-        return Collections.singletonMap("hello","world");
+        return Collections.singletonMap("hello",jwt.getClaims());
     }
 }
