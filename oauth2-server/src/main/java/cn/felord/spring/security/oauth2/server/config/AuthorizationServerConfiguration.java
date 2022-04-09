@@ -5,6 +5,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -16,6 +17,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
@@ -104,7 +106,8 @@ public class AuthorizationServerConfiguration {
 //               客户端ID和密码
                 .clientId("felord")
 //                      PRIVATE_KEY_JWT 不需要这个  CLIENT_SECRET_JWT需要
-                .clientSecret("226ab006e9494b0e84893cd7b402cd8e")
+                .clientSecret(PasswordEncoderFactories.createDelegatingPasswordEncoder()
+                        .encode("226ab006e9494b0e84893cd7b402cd8e"))
 //                名称 可不定义
                 .clientName("@码农小胖哥")
 //                授权方法
@@ -117,11 +120,7 @@ public class AuthorizationServerConfiguration {
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
 //                回调地址名单，不在此列将被拒绝 而且只能使用IP或者域名  不能使用 localhost
-                .redirectUri("http://127.0.0.1:8082/login/oauth2/code/felord-client-oidc")
-                .redirectUri("http://127.0.0.1:8082/authorized")
-                .redirectUri("http://127.0.0.1:8082/login/oauth2/code/felord")
-                .redirectUri("http://127.0.0.1:8082/foo/bar")
-                .redirectUri("https://baidu.com")
+                .redirectUri("http://localhost:8080/login/oauth2/code/felord")
 //                OIDC支持
                 .scope(OidcScopes.OPENID)
 //                其它Scope
@@ -198,10 +197,11 @@ public class AuthorizationServerConfiguration {
      * @return the provider settings
      */
     @Bean
-    public ProviderSettings providerSettings() {
-        //TODO 生产应该使用域名
-        return ProviderSettings.builder().issuer("http://localhost:8080/sas").build();
-    }
+    public ProviderSettings providerSettings(@Value("${server.port}") Integer port) {
+            //TODO 生产应该使用域名
+            return ProviderSettings.builder().issuer("http://localhost:" + port).build();
+//            return ProviderSettings.builder().issuer("http://localhost:8080/sas").build();
+        }
 
 
     /**

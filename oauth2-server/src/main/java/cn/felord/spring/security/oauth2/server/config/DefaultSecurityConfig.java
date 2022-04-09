@@ -44,11 +44,8 @@ public class DefaultSecurityConfig {
     // @formatter:off
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests(authorizeRequests ->
-                        authorizeRequests.antMatchers("/oauth2/user")
-                                .hasAnyAuthority("SCOPE_userinfo")
-                                .anyRequest().authenticated()
-                )
+        http.authorizeRequests().anyRequest().authenticated()
+                .and()
                 .formLogin()
                 .and()
                 .oauth2ResourceServer().jwt();
@@ -91,6 +88,6 @@ public class DefaultSecurityConfig {
      */
     @Bean
     WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().antMatchers("/actuator/health","/h2-console/**");
+        return web -> web.ignoring().antMatchers("/actuator/health","/h2-console/**","/favicon.ico");
     }
 }

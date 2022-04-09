@@ -14,7 +14,7 @@
     <modules>
         <module>gateway</module>
         <module>oauth2-server</module>
-        <module>oauth2-clients</module>
+        <module>resource-server</module>
     </modules>
 
 </project>

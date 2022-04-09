@@ -1,12 +1,13 @@
-package cn.felord.oauth2;
+package cn.felord.resource;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SpringSecurityOauth2ClientApplicationTests {
+class ResourceServerApplicationTests {
 
     @Test
     void contextLoads() {
     }
+
 }
