@@ -2,9 +2,9 @@ logging:
   level:
     root: INFO
     org.springframework.web: TRACE
-    org.springframework.security: TRACE
+    org.springframework.security: DEBUG
     org.springframework.security.oauth2: DEBUG
-    org.springframework.cloud.gateway: TRACE
+    org.springframework.cloud.gateway: DEBUG
 spring:
   security:
     oauth2:
@@ -14,7 +14,7 @@ spring:
             client-id: felord
             # hmac sha 256 有长度要求
             client-secret: 226ab006e9494b0e84893cd7b402cd8e
-            redirect-uri:  '{baseUrl}/login/oauth2/code/{registrationId}'
+            redirect-uri:  'http://127.0.0.1:8080/login/oauth2/code/{registrationId}'
             authorization-grant-type: authorization_code
 #            client-authentication-method: client_secret_jwt
             client-authentication-method: client_secret_basic
@@ -26,9 +26,9 @@ spring:
     gateway:
       routes:
         - id: resource-server
-          uri: http://localhost:8003
+          uri: http://127.0.0.1:8003
           predicates:
-            - Path=/resource/**
+            - Path=/res/**
           filters:
 #            - StripPrefix=1
             - TokenRelay

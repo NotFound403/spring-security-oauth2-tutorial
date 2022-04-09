@@ -44,7 +44,8 @@ public class DefaultSecurityConfig {
     // @formatter:off
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest().authenticated()
+        http.authorizeRequests().mvcMatchers("/error").anonymous()
+                .anyRequest().authenticated()
                 .and()
                 .formLogin()
                 .and()

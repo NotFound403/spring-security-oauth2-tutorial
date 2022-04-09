@@ -11,6 +11,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -20,12 +23,14 @@ import org.springframework.security.config.annotation.web.configurers.oauth2.ser
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationCodeRequestAuthenticationException;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
@@ -57,8 +62,16 @@ public class AuthorizationServerConfiguration {
         OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer =
                 new OAuth2AuthorizationServerConfigurer<>();
         //  把自定义的授权确认URI加入配置
-        authorizationServerConfigurer.authorizationEndpoint(authorizationEndpointConfigurer->
-                authorizationEndpointConfigurer.consentPage(CUSTOM_CONSENT_PAGE_URI));
+        authorizationServerConfigurer.authorizationEndpoint(authorizationEndpointConfigurer ->
+                authorizationEndpointConfigurer.consentPage(CUSTOM_CONSENT_PAGE_URI)
+                        .errorResponseHandler(((request, response, exception) -> {
+                            OAuth2AuthorizationCodeRequestAuthenticationException authorizationCodeRequestAuthenticationException =
+                                    (OAuth2AuthorizationCodeRequestAuthenticationException) exception;
+                            OAuth2Error error = authorizationCodeRequestAuthenticationException.getError();
+                            MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
+                            mappingJackson2HttpMessageConverter.write(error, MediaType.APPLICATION_JSON, new ServletServerHttpResponse(response));
+                        }))
+        );
 
         RequestMatcher authorizationServerEndpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
@@ -120,12 +133,11 @@ public class AuthorizationServerConfiguration {
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
 //                回调地址名单，不在此列将被拒绝 而且只能使用IP或者域名  不能使用 localhost
-                .redirectUri("http://localhost:8080/login/oauth2/code/felord")
+                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/felord")
 //                OIDC支持
                 .scope(OidcScopes.OPENID)
 //                其它Scope
                 .scope("message.read")
-                .scope("userinfo")
                 .scope("message.write")
 //                JWT的配置项 包括TTL  是否复用refreshToken等等
                 .tokenSettings(TokenSettings.builder().build())
@@ -198,10 +210,10 @@ public class AuthorizationServerConfiguration {
      */
     @Bean
     public ProviderSettings providerSettings(@Value("${server.port}") Integer port) {
-            //TODO 生产应该使用域名
-            return ProviderSettings.builder().issuer("http://localhost:" + port).build();
+        //TODO 生产应该使用域名
+        return ProviderSettings.builder().issuer("http://localhost:" + port).build();
 //            return ProviderSettings.builder().issuer("http://localhost:8080/sas").build();
-        }
+    }
 
 
     /**
