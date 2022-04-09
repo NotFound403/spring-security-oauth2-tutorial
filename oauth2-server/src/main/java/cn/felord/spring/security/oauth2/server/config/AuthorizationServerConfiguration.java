@@ -215,6 +215,7 @@ public class AuthorizationServerConfiguration {
         // @formatter:off
         return new EmbeddedDatabaseBuilder()
                 .generateUniqueName(true)
+                .setName("auth_server")
                 .setType(EmbeddedDatabaseType.H2)
                 .setScriptEncoding("UTF-8")
                 .addScript("org/springframework/security/oauth2/server/authorization/oauth2-authorization-schema.sql")
