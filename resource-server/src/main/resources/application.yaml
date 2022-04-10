@@ -1,5 +1,12 @@
 server:
   port: 8003
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    org.springframework.cloud.gateway: DEBUG
 spring:
   security:
     oauth2:

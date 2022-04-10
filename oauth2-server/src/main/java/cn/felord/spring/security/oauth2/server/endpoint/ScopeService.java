@@ -19,6 +19,8 @@ public class ScopeService {
 
     static {
         OAuth2Scope scope = new OAuth2Scope();
+        scope.setScope("openid");
+        scope.setDescription("open connect id 1.0");
         scope.setScope("message.read");
         scope.setDescription("应用将能够获取你的个人信息读取权限");
         OAuth2Scope scope1 = new OAuth2Scope();

@@ -142,7 +142,7 @@ public class AuthorizationServerConfiguration {
 //                JWT的配置项 包括TTL  是否复用refreshToken等等
                 .tokenSettings(TokenSettings.builder().build())
 //                配置客户端相关的配置项，包括验证密钥或者 是否需要授权页面
-                .clientSettings(ClientSettings.builder()
+                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true)
 //                        CLIENT_SECRET_JWT 采用HMAC SHA-256   注意区别于PRIVATE_KEY_JWT
                         .tokenEndpointAuthenticationSigningAlgorithm(MacAlgorithm.HS256)
                         .build())
