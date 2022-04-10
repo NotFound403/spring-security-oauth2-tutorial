@@ -19,7 +19,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
@@ -56,7 +55,7 @@ public class AuthorizationServerConfiguration {
         OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer =
                 new OAuth2AuthorizationServerConfigurer<>();
         //  把自定义的授权确认URI加入配置
-        authorizationServerConfigurer.authorizationEndpoint(authorizationEndpointConfigurer->
+        authorizationServerConfigurer.authorizationEndpoint(authorizationEndpointConfigurer ->
                 authorizationEndpointConfigurer.consentPage(CUSTOM_CONSENT_PAGE_URI));
 
         RequestMatcher authorizationServerEndpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
@@ -109,22 +108,14 @@ public class AuthorizationServerConfiguration {
 //                名称 可不定义
                 .clientName("@码农小胖哥")
 //                授权方法
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                // jwt 断言必备
+//                授权类型 CLIENT_SECRET_JWT
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_JWT)
-                .clientAuthenticationMethod(ClientAuthenticationMethod.PRIVATE_KEY_JWT)
 //                授权类型
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
 //                回调地址名单，不在此列将被拒绝 而且只能使用IP或者域名  不能使用 localhost
-                .redirectUri("http://127.0.0.1:8082/login/oauth2/code/felord-client-oidc")
-                .redirectUri("http://127.0.0.1:8082/authorized")
-                .redirectUri("http://127.0.0.1:8082/login/oauth2/code/felord")
                 .redirectUri("http://127.0.0.1:8082/foo/bar")
-                .redirectUri("https://baidu.com")
-//                OIDC支持
-                .scope(OidcScopes.OPENID)
 //                其它Scope
                 .scope("message.read")
                 .scope("userinfo")
@@ -133,7 +124,7 @@ public class AuthorizationServerConfiguration {
                 .tokenSettings(TokenSettings.builder().build())
 //                配置客户端相关的配置项，包括验证密钥或者 是否需要授权页面
                 .clientSettings(ClientSettings.builder()
-//                        CLIENT_SECRET_JWT 采用HMAC SHA-256   注意区别于PRIVATE_KEY_JWT
+//                        CLIENT_SECRET_JWT 采用HMAC SHA-256等HMAC算法
                         .tokenEndpointAuthenticationSigningAlgorithm(MacAlgorithm.HS256)
                         .build())
                 .build();

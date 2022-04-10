@@ -14,9 +14,11 @@ public class JwkResolver {
 
     @SneakyThrows
     public JWK apply(ClientRegistration clientRegistration) {
-        Assert.isTrue(ClientAuthenticationMethod.CLIENT_SECRET_JWT.equals(clientRegistration.getClientAuthenticationMethod()), "CLIENT_SECRET_JWT Only");
+        ClientAuthenticationMethod method = clientRegistration.getClientAuthenticationMethod();
+        Assert.isTrue(ClientAuthenticationMethod.CLIENT_SECRET_JWT.equals(method), "CLIENT_SECRET_JWT Only");
         byte[] pin = clientRegistration.getClientSecret().getBytes(StandardCharsets.UTF_8);
-        SecretKeySpec secretKey = new SecretKeySpec(pin, "HmacSHA256");
+        String hmacAlg = "HmacSHA256";
+        SecretKeySpec secretKey = new SecretKeySpec(pin, hmacAlg);
         return new OctetSequenceKey.Builder(secretKey).build();
     }
 }
