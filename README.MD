@@ -1,7 +1,11 @@
-## Spring Security OAuth2相关教程
+##  :tw-1f680: Spring Security OAuth2相关教程
+
+:loudspeaker: 最新、最全、最干，国内首发，觉得不错请  :tw-2b50: **Star** :tw-2b50:
+
 详细讲解参见[Spring Security 与 OAuth2](https://blog.csdn.net/qq_35067322/category_11691173.html)专题教程
 ### 为什么这么多分支？
-我把所有的DEMO放在一个分支里，相关的知识点太多，不容易消化，每个分支都有不同的侧重点，需要结合下面的专题教程学习理解。
+
+我把所有的DEMO放在一个分支里，相关的知识点太多，不容易消化，每个分支都有不同的侧重点，需要结合下面教程进行理解。
 
 ### 目录
 
@@ -41,8 +45,8 @@
 - [34-自定义OAuth2授权确认页面](https://felord.blog.csdn.net/article/details/123821842)
 - [35-OAuth2授权服务器客户端认证配置](https://felord.blog.csdn.net/article/details/123871892)
 - [36-OAuth2客户端认证过滤器详解](https://felord.blog.csdn.net/article/details/123899496)
-- [37-Spring Authorization Server利用JWT对OAuth2客户端进行认证（国内首发）
-  ](https://felord.blog.csdn.net/article/details/123960371)
+- [37-Spring Authorization Server利用JWT对OAuth2客户端进行认证（国内首发）](https://felord.blog.csdn.net/article/details/123960371)
+- [38-Spring Authorization Server实现client_secret_jwt客户端认证](https://felord.blog.csdn.net/article/details/124078502)
 - 未上架，待补充 [催更](https://asset.felord.cn/blog/20210224102609.png)
 
 ### Gitee OAuth2登录规范类库相关DEMO
