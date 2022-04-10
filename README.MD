@@ -46,7 +46,8 @@
 - [35-OAuth2授权服务器客户端认证配置](https://felord.blog.csdn.net/article/details/123871892)
 - [36-OAuth2客户端认证过滤器详解](https://felord.blog.csdn.net/article/details/123899496)
 - [37-Spring Authorization Server利用JWT对OAuth2客户端进行认证（国内首发）](https://felord.blog.csdn.net/article/details/123960371)
-- [38-Spring Authorization Server实现client_secret_jwt客户端认证](https://felord.blog.csdn.net/article/details/124078502)
+- [38-OAuth2客户端认证方式private_key_jwt的Java实现](https://felord.blog.csdn.net/article/details/123982598)
+- [39-Spring Authorization Server实现client_secret_jwt客户端认证](https://felord.blog.csdn.net/article/details/124078502)
 - 未上架，待补充 [催更](https://asset.felord.cn/blog/20210224102609.png)
 
 ### Gitee OAuth2登录规范类库相关DEMO
