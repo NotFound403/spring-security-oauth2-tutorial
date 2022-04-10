@@ -1,9 +1,9 @@
-##  :tw-1f680: Spring Security OAuth2相关教程
+##  🚀 Spring Security OAuth2相关教程
 
-:loudspeaker: 最新、最全、最干，国内首发，觉得不错请  :tw-2b50: **Star** :tw-2b50:
+:loudspeaker: 最新、最全、最干，国内首发，觉得不错请  ⭐ **Star** ⭐
 
 详细讲解参见[Spring Security 与 OAuth2](https://blog.csdn.net/qq_35067322/category_11691173.html)专题教程
-### 为什么这么多分支？
+### ❓ 为什么这么多分支？
 
 我把所有的DEMO放在一个分支里，相关的知识点太多，不容易消化，每个分支都有不同的侧重点，需要结合下面教程进行理解。
 
