@@ -1,7 +1,6 @@
 package cn.felord.gateway.security;
 
 import com.nimbusds.jose.jwk.OctetSequenceKey;
-import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -10,6 +9,7 @@ import org.springframework.security.oauth2.client.endpoint.NimbusJwtClientAuthen
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.client.endpoint.ReactiveOAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.WebClientReactiveAuthorizationCodeTokenResponseClient;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 import javax.crypto.spec.SecretKeySpec;

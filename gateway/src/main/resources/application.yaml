@@ -16,7 +16,7 @@ spring:
             client-secret: 226ab006e9494b0e84893cd7b402cd8e
             redirect-uri:  'http://127.0.0.1:8080/login/oauth2/code/{registrationId}'
             authorization-grant-type: authorization_code
-#            client-authentication-method: client_secret_jwt
+#            client_secret_jwt
             client-authentication-method: client_secret_jwt
             scope: message.read,message.write,openid
         provider:

@@ -20,7 +20,6 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.OAuth2Error;
@@ -119,13 +118,12 @@ public class AuthorizationServerConfiguration {
 //               客户端ID和密码
                 .clientId("felord")
 //                      PRIVATE_KEY_JWT 不需要这个  CLIENT_SECRET_JWT需要
-                .clientSecret(PasswordEncoderFactories.createDelegatingPasswordEncoder()
-                        .encode("226ab006e9494b0e84893cd7b402cd8e"))
+                .clientSecret("226ab006e9494b0e84893cd7b402cd8e")
 //                名称 可不定义
                 .clientName("@码农小胖哥")
 //                授权方法
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                // jwt 断言必备
+                // jwt 断言
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_JWT)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.PRIVATE_KEY_JWT)
 //                授权类型
