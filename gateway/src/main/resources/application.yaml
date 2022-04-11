@@ -17,7 +17,7 @@ spring:
             redirect-uri:  'http://127.0.0.1:8080/login/oauth2/code/{registrationId}'
             authorization-grant-type: authorization_code
 #            client-authentication-method: client_secret_jwt
-            client-authentication-method: client_secret_basic
+            client-authentication-method: client_secret_jwt
             scope: message.read,message.write,openid
         provider:
           felord:
