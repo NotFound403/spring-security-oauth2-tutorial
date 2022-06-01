@@ -57,6 +57,7 @@ public class SecurityConfiguration {
                         additionalParameters.put(PkceParameterNames.CODE_CHALLENGE, codeChallenge);
                         additionalParameters.put(PkceParameterNames.CODE_CHALLENGE_METHOD, "S256");
                     } catch (NoSuchAlgorithmException ex) {
+                        //  plain  方式  这种方式几乎作废了
                         additionalParameters.put(PkceParameterNames.CODE_CHALLENGE, codeVerifier);
                     }
                 });
