@@ -13,7 +13,7 @@
 
     <modules>
         <module>oauth2-server</module>
-        <module>oauth2-clients</module>
+        <module>oauth2-oidc-login</module>
     </modules>
 
 </project>

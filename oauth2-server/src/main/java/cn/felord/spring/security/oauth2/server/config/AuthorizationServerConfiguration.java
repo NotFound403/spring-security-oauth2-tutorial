@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -44,7 +45,7 @@ import java.util.UUID;
 public class AuthorizationServerConfiguration {
 
     /**
-     * Authorization server 集成 优先级要高一些
+     * uthorization server 集成优先级要高一些
      *
      * @param http the http
      * @return the security filter chain
@@ -55,7 +56,8 @@ public class AuthorizationServerConfiguration {
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer =
                 new OAuth2AuthorizationServerConfigurer<>();
-        // TODO 你可以根据需求对authorizationServerConfigurer进行一些个性化配置
+        authorizationServerConfigurer.oidc(oidcConfigurer ->
+                oidcConfigurer.clientRegistrationEndpoint(Customizer.withDefaults()));
         RequestMatcher authorizationServerEndpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
         // 拦截 授权服务器相关的请求端点

@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>cn.felord</groupId>
-    <artifactId>oauth2-clients</artifactId>
+    <artifactId>oauth2-oidc-login</artifactId>
     <version>1.0.0</version>
-    <name>oauth2-clients</name>
-    <description>oauth2-clients</description>
+    <name>oauth2-oidc-login</name>
+    <description>oauth2-oidc-login</description>
     <properties>
         <java.version>1.8</java.version>
     </properties>
