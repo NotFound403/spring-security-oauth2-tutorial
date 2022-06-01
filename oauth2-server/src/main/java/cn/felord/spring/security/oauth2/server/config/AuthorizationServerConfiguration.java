@@ -56,7 +56,7 @@ public class AuthorizationServerConfiguration {
         OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer =
                 new OAuth2AuthorizationServerConfigurer<>();
         //  把自定义的授权确认URI加入配置
-        authorizationServerConfigurer.authorizationEndpoint(authorizationEndpointConfigurer->
+        authorizationServerConfigurer.authorizationEndpoint(authorizationEndpointConfigurer ->
                 authorizationEndpointConfigurer.consentPage(CUSTOM_CONSENT_PAGE_URI));
 
         RequestMatcher authorizationServerEndpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
@@ -99,6 +99,7 @@ public class AuthorizationServerConfiguration {
         // only@test end
         return registeredClientRepository;
     }
+
     private RegisteredClient createJwtRegisteredClient(final String id) {
         return RegisteredClient.withId(id)
 //               客户端ID和密码
@@ -128,6 +129,8 @@ public class AuthorizationServerConfiguration {
 //                配置客户端相关的配置项，包括验证密钥或者 是否需要授权页面
                 .clientSettings(ClientSettings.builder()
                         .tokenEndpointAuthenticationSigningAlgorithm(SignatureAlgorithm.RS256)
+                       // 开启PKCE
+                        .requireProofKey(true)
                         // private key jwt
                         .jwkSetUrl("http://localhost:8082/oauth2/jwks")
                         .build())
