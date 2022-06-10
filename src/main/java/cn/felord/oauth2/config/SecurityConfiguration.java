@@ -3,10 +3,11 @@ package cn.felord.oauth2.config;
 import cn.felord.oauth2.wechat.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.FormHttpMessageConverter;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
@@ -24,7 +25,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -32,24 +33,6 @@ import java.util.Map;
  */
 @Configuration(proxyBeanMethods = false)
 public class SecurityConfiguration {
-    private static final String WECHAT_PROVIDER = "wechat";
-
-    /***
-     *
-     * 默认配置，用来对比
-     *
-     * @param http http
-     * @return SecurityFilterChain
-     * @throws Exception exception
-     */
-//    @Bean
-    SecurityFilterChain oauth2SecurityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests((requests) -> requests.anyRequest().authenticated());
-        http.oauth2Login(Customizer.withDefaults());
-        http.oauth2Client();
-        return http.build();
-    }
-
 
     /***
      * 自定义
@@ -60,21 +43,23 @@ public class SecurityConfiguration {
      */
     @Bean
     SecurityFilterChain customSecurityFilterChain(HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
-    /*    OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DelegatingOAuth2UserService<>(Arrays.asList(new WechatOAuth2UserService(),
-                new DefaultOAuth2UserService()));*/
+        Map<String, OAuth2UserService<  OAuth2UserRequest,   OAuth2User>> map = new HashMap<>();
+           map.put(ClientProviders.WECHAT_WEB_CLIENT.registrationId(), new WechatOAuth2UserService());
+           map.put(ClientProviders.WORK_WECHAT_SCAN_CLIENT.registrationId(), new WorkWechatOAuth2UserService());
 
-
-        OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DelegatingOAuth2UserService<>(Collections.singletonMap("wechat",new WechatOAuth2UserService()));
+        OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DelegatingOAuth2UserService<>( map);
 
         OAuth2AuthorizationRequestResolver authorizationRequestResolver = oAuth2AuthorizationRequestResolver(clientRegistrationRepository);
         OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient = accessTokenResponseClient();
 
-        http.authorizeRequests((requests) -> requests.anyRequest().authenticated())
+        http.authorizeRequests((requests) ->
+                        requests.mvcMatchers(HttpMethod.GET,"/wwechat/callback").anonymous()
+                        .anyRequest().authenticated())
                 .oauth2Login().authorizationEndpoint()
                 // 授权端点配置
                 .authorizationRequestResolver(authorizationRequestResolver)
                 .and()
-                 // 获取token端点配置  比如根据code 获取 token
+                // 获取token端点配置  比如根据code 获取 token
                 .tokenEndpoint().accessTokenResponseClient(accessTokenResponseClient)
                 .and()
                 // 获取用户信息端点配置  根据accessToken获取用户基本信息
@@ -93,7 +78,7 @@ public class SecurityConfiguration {
      */
     private OAuth2AuthorizationRequestResolver oAuth2AuthorizationRequestResolver(ClientRegistrationRepository clientRegistrationRepository) {
         DefaultOAuth2AuthorizationRequestResolver resolver = new DefaultOAuth2AuthorizationRequestResolver(clientRegistrationRepository, OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI);
-        resolver.setAuthorizationRequestCustomizer(new WechatOAuth2AuthorizationRequestCustomizer(WECHAT_PROVIDER)::customize);
+        resolver.setAuthorizationRequestCustomizer(WechatOAuth2AuthorizationRequestCustomizer::customize);
         return resolver;
     }
 
@@ -121,7 +106,13 @@ public class SecurityConfiguration {
 
         restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
         tokenResponseClient.setRestOperations(restTemplate);
-        return tokenResponseClient;
+        return new DelegateOAuth2AccessTokenResponseClient(tokenResponseClient);
+    }
+
+    @Bean
+    WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring()
+                .antMatchers("/favicon.ico");
     }
 }
 

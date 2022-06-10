@@ -3,12 +3,9 @@ package cn.felord.oauth2.wechat;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
-import org.springframework.util.Assert;
-import org.springframework.web.util.UriBuilder;
 
-import java.net.URI;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -20,14 +17,6 @@ import java.util.function.Consumer;
  * @see DefaultOAuth2AuthorizationRequestResolver#setAuthorizationRequestCustomizer(Consumer)
  */
 public class WechatOAuth2AuthorizationRequestCustomizer {
-    private static final String WECHAT_APP_ID = "appid";
-    private static final String WECHAT_FRAGMENT = "wechat_redirect";
-    private final String wechatRegistrationId;
-
-    public WechatOAuth2AuthorizationRequestCustomizer(String wechatRegistrationId) {
-        Assert.notNull(wechatRegistrationId, "wechat registrationId flag must not be null");
-        this.wechatRegistrationId = wechatRegistrationId;
-    }
 
     /**
      * 默认情况下Spring Security会生成授权链接：
@@ -40,34 +29,16 @@ public class WechatOAuth2AuthorizationRequestCustomizer {
      *
      * @param builder the builder
      */
-    public void customize(OAuth2AuthorizationRequest.Builder builder) {
-        builder.attributes(attributes -> {
-            String registrationId = (String) attributes.get(OAuth2ParameterNames.REGISTRATION_ID);
-            if (wechatRegistrationId.equals(registrationId)) {
-                builder.parameters(this::wechatParametersConsumer);
-                builder.authorizationRequestUri(this::authorizationRequestUriFunction);
-            }
-        });
+    public static void customize(OAuth2AuthorizationRequest.Builder builder) {
+        builder.attributes(attributes ->
+                Arrays.stream(ClientProviders.values())
+                        .filter(clientProvider ->
+                                Objects.equals(clientProvider.registrationId(),
+                                        attributes.get(OAuth2ParameterNames.REGISTRATION_ID)))
+                        .findAny()
+                        .map(ClientProviders::requestConsumer)
+                        .ifPresent(requestConsumer ->
+                                requestConsumer.accept(builder)));
     }
 
-
-    private void wechatParametersConsumer(Map<String, Object> parameters) {
-        //   client_id replace into appid here
-        LinkedHashMap<String, Object> linkedParameters = new LinkedHashMap<>();
-        //  k v  must be ordered
-        parameters.forEach((k, v) -> {
-            if (OAuth2ParameterNames.CLIENT_ID.equals(k)) {
-                linkedParameters.put(WECHAT_APP_ID, v);
-            } else {
-                linkedParameters.put(k, v);
-            }
-        });
-        parameters.clear();
-        parameters.putAll(linkedParameters);
-    }
-
-    private URI authorizationRequestUriFunction(UriBuilder builder) {
-        //  add  wechat fragment here
-        return builder.fragment(WECHAT_FRAGMENT).build();
-    }
 }

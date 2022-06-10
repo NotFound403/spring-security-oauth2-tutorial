@@ -6,4 +6,13 @@
 - 需要内网穿透
 - 其它参见专题
 
+### 企业微信扫码登录
+- 需要企业微信环境
+- 需要内网穿透
+> 调用必须通过 域名 ，不能使用`localhost`
+
+##更多干货教程参见
+
+[Spring Security OAuth2专题](https://blog.csdn.net/qq_35067322/category_11691173.html)
+
 <img src="tutorial.png" style="zoom:75%;" />
