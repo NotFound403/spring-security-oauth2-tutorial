@@ -112,6 +112,7 @@ public class SecurityConfiguration {
     @Bean
     WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
+                .antMatchers("/error")
                 .antMatchers("/favicon.ico");
     }
 }
