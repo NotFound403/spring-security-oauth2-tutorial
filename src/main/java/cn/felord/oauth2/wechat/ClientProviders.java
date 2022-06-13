@@ -27,30 +27,33 @@ import java.util.function.Consumer;
  * The enum Client providers.
  */
 public enum ClientProviders {
+    WECHAT_WEB_LOGIN_CLIENT("wechat-web-login",
+            ClientProviders::oAuth2AuthorizationRequestConsumer,
+            authorizationCodeGrantRequest -> {
+                ClientRegistration clientRegistration = authorizationCodeGrantRequest.getClientRegistration();
+                HttpHeaders headers = getTokenRequestHeaders(clientRegistration);
 
+                OAuth2AuthorizationExchange authorizationExchange = authorizationCodeGrantRequest.getAuthorizationExchange();
+                MultiValueMap<String, String> queryParameters = new LinkedMultiValueMap<>();
+                // grant_type
+                queryParameters.add(OAuth2ParameterNames.GRANT_TYPE, authorizationCodeGrantRequest.getGrantType().getValue());
+                // code
+                queryParameters.add(OAuth2ParameterNames.CODE, authorizationExchange.getAuthorizationResponse().getCode());
+                //appid
+                queryParameters.add(WechatParameterNames.APP_ID, clientRegistration.getClientId());
+                //secret
+                queryParameters.add(WechatParameterNames.SECRET, clientRegistration.getClientSecret());
+
+                String tokenUri = clientRegistration.getProviderDetails().getTokenUri();
+
+                URI uri = UriComponentsBuilder.fromUriString(tokenUri).queryParams(queryParameters).build().toUri();
+                return RequestEntity.get(uri).headers(headers).build();
+            }),
     /**
      * 微信网页授权.
      */
     WECHAT_WEB_CLIENT("wechat-web",
-            builder ->
-                    builder.attributes(attributes ->
-                            builder.parameters(parameters -> {
-                                //   client_id replace into appid here
-                                LinkedHashMap<String, Object> linkedParameters = new LinkedHashMap<>();
-                                //  k v  must be ordered
-                                parameters.forEach((k, v) -> {
-                                    if (OAuth2ParameterNames.CLIENT_ID.equals(k)) {
-                                        linkedParameters.put(WechatParameterNames.APP_ID, v);
-                                    } else {
-                                        linkedParameters.put(k, v);
-                                    }
-                                });
-                                parameters.clear();
-                                parameters.putAll(linkedParameters);
-                                builder.authorizationRequestUri(uriBuilder ->
-                                        uriBuilder.fragment(WechatParameterNames.WECHAT_REDIRECT)
-                                                .build());
-                            })),
+            ClientProviders::oAuth2AuthorizationRequestConsumer,
             authorizationCodeGrantRequest -> {
                 ClientRegistration clientRegistration = authorizationCodeGrantRequest.getClientRegistration();
                 HttpHeaders headers = getTokenRequestHeaders(clientRegistration);
@@ -192,5 +195,38 @@ public enum ClientProviders {
             throw new IllegalArgumentException(ex);
         }
     }
+
+    /**
+     * 默认情况下Spring Security会生成授权链接：
+     * {@code https://open.weixin.qq.com/connect/oauth2/authorize?response_type=code
+     * &client_id=wxdf9033184b238e7f
+     * &scope=snsapi_userinfo
+     * &state=5NDiQTMa9ykk7SNQ5-OIJDbIy9RLaEVzv3mdlj8TjuE%3D
+     * &redirect_uri=https%3A%2F%2Fmov-h5-test.felord.cn}
+     * 缺少了微信协议要求的{@code #wechat_redirect}，同时 {@code client_id}应该替换为{@code app_id}
+     *
+     * @param builder the OAuth2AuthorizationRequest.builder
+     */
+    private static void oAuth2AuthorizationRequestConsumer(OAuth2AuthorizationRequest.Builder builder) {
+        builder.attributes(attributes ->
+                builder.parameters(parameters -> {
+                    //   client_id replace into appid here
+                    LinkedHashMap<String, Object> linkedParameters = new LinkedHashMap<>();
+                    //  k v  must be ordered
+                    parameters.forEach((k, v) -> {
+                        if (OAuth2ParameterNames.CLIENT_ID.equals(k)) {
+                            linkedParameters.put(WechatParameterNames.APP_ID, v);
+                        } else {
+                            linkedParameters.put(k, v);
+                        }
+                    });
+                    parameters.clear();
+                    parameters.putAll(linkedParameters);
+                    builder.authorizationRequestUri(uriBuilder ->
+                            uriBuilder.fragment(WechatParameterNames.WECHAT_REDIRECT)
+                                    .build());
+                }));
+    }
+
 
 }

@@ -43,18 +43,20 @@ public class SecurityConfiguration {
      */
     @Bean
     SecurityFilterChain customSecurityFilterChain(HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
-        Map<String, OAuth2UserService<  OAuth2UserRequest,   OAuth2User>> map = new HashMap<>();
-           map.put(ClientProviders.WECHAT_WEB_CLIENT.registrationId(), new WechatOAuth2UserService());
-           map.put(ClientProviders.WORK_WECHAT_SCAN_CLIENT.registrationId(), new WorkWechatOAuth2UserService());
+        Map<String, OAuth2UserService<OAuth2UserRequest, OAuth2User>> map = new HashMap<>();
+        WechatOAuth2UserService value = new WechatOAuth2UserService();
+        map.put(ClientProviders.WECHAT_WEB_CLIENT.registrationId(), value);
+        map.put(ClientProviders.WECHAT_WEB_LOGIN_CLIENT.registrationId(), value);
+        map.put(ClientProviders.WORK_WECHAT_SCAN_CLIENT.registrationId(), new WorkWechatOAuth2UserService());
 
-        OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DelegatingOAuth2UserService<>( map);
+        OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DelegatingOAuth2UserService<>(map);
 
         OAuth2AuthorizationRequestResolver authorizationRequestResolver = oAuth2AuthorizationRequestResolver(clientRegistrationRepository);
         OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient = accessTokenResponseClient();
 
         http.authorizeRequests((requests) ->
-                        requests.mvcMatchers(HttpMethod.GET,"/wwechat/callback").anonymous()
-                        .anyRequest().authenticated())
+                        requests.mvcMatchers(HttpMethod.GET, "/wwechat/callback").anonymous()
+                                .anyRequest().authenticated())
                 .oauth2Login().authorizationEndpoint()
                 // 授权端点配置
                 .authorizationRequestResolver(authorizationRequestResolver)

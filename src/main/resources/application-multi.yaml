@@ -4,6 +4,7 @@ spring:
       client:
         registration:
           gitee:
+            client-name: 码云
             client-id: 2274094e86ac40f6a401883715ae539d14be2e1dfe4552cfbb71b768ae8ea452
             client-secret: b5245ca84327ce890372c69745c639c8c0dd9a5916ec3f7fb5fed5485e8d8433
             authorization-grant-type: authorization_code
@@ -11,6 +12,7 @@ spring:
             client-authentication-method: POST
             scope: user_info
           wechat-web:
+            client-name: 微信网页授权
             # 可以去试一下沙箱
             # 公众号服务号 appid
             client-id: wxdf9033184b238e7f
@@ -21,7 +23,15 @@ spring:
             authorization-grant-type: authorization_code
             redirect-uri:  '{baseUrl}/login/oauth2/code/{registrationId}'
             scope: snsapi_userinfo
+          wechat-web-login:
+            client-name: 微信
+            client-id: xxxx
+            client-secret: xxxxxxxxxxxx
+            authorization-grant-type: authorization_code
+            redirect-uri:  '{baseUrl}/login/oauth2/code/{registrationId}'
+            scope: snsapi_login
           work-wechat-scan:
+            client-name: 企业微信
             #todo 企业微信 CORPID
             client-id: wwa70dc5b6e56936e1
             #todo 企业微信对应应用的secret
@@ -36,6 +46,10 @@ spring:
             user-name-attribute: name
           wechat-web:
             authorization-uri: https://open.weixin.qq.com/connect/oauth2/authorize
+            token-uri: https://api.weixin.qq.com/sns/oauth2/access_token
+            user-info-uri: https://api.weixin.qq.com/sns/userinfo
+          wechat-web-login:
+            authorization-uri: https://open.weixin.qq.com/connect/qrconnect
             token-uri: https://api.weixin.qq.com/sns/oauth2/access_token
             user-info-uri: https://api.weixin.qq.com/sns/userinfo
           work-wechat-scan:

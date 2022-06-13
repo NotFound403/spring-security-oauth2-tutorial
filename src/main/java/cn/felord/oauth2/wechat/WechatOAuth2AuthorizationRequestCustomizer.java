@@ -19,13 +19,7 @@ import java.util.function.Consumer;
 public class WechatOAuth2AuthorizationRequestCustomizer {
 
     /**
-     * 默认情况下Spring Security会生成授权链接：
-     * {@code https://open.weixin.qq.com/connect/oauth2/authorize?response_type=code
-     * &client_id=wxdf9033184b238e7f
-     * &scope=snsapi_userinfo
-     * &state=5NDiQTMa9ykk7SNQ5-OIJDbIy9RLaEVzv3mdlj8TjuE%3D
-     * &redirect_uri=https%3A%2F%2Fmov-h5-test.felord.cn}
-     * 缺少了微信协议要求的{@code #wechat_redirect}，同时 {@code client_id}应该替换为{@code app_id}
+     * 授权请求参数定制
      *
      * @param builder the builder
      */
